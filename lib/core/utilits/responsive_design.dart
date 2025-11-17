@@ -18,10 +18,12 @@ class ResponsiveInfo {
   });
 
   /// Dynamic width scale based on device size
-  double width(double value) => value * (screenWidth / 375); // 375 = iPhone base width
+  double width(double value) =>
+      value * (screenWidth / 375); // 375 = iPhone base width
 
   /// Dynamic height scale based on device size
-  double height(double value) => value * (screenHeight / 812); // 812 = iPhone base height
+  double height(double value) =>
+      value * (screenHeight / 812); // 812 = iPhone base height
 
   /// Dynamic text size scaling
   double text(double fontSize) {
@@ -29,20 +31,33 @@ class ResponsiveInfo {
     if (isTablet) return fontSize * 1.1;
     return fontSize;
   }
+
+  int getCrossAxisCount(double width) {
+    if (width > 1400) return 3;
+    if (width > 1100) return 3;
+    if (width > 800) return 2;
+    return 1;
+  }
+
+  double getAspectRatio(double width) {
+    if (width > 1400) return 1.3;
+    if (width > 1100) return 1.2;
+    return 1.1;
+  }
 }
 
 /// StateNotifier to manage and update responsive data
 class ResponsiveNotifier extends StateNotifier<ResponsiveInfo> {
   ResponsiveNotifier()
-      : super(
-          ResponsiveInfo(
-            screenWidth: 375,
-            screenHeight: 812,
-            isMobile: true,
-            isTablet: false,
-            isDesktop: false,
-          ),
-        );
+    : super(
+        ResponsiveInfo(
+          screenWidth: 375,
+          screenHeight: 812,
+          isMobile: true,
+          isTablet: false,
+          isDesktop: false,
+        ),
+      );
 
   /// Update the state when layout changes
   void updateFromContext(BuildContext context) {
@@ -66,5 +81,5 @@ class ResponsiveNotifier extends StateNotifier<ResponsiveInfo> {
 /// Global Riverpod provider for responsive data
 final responsiveProvider =
     StateNotifierProvider<ResponsiveNotifier, ResponsiveInfo>(
-  (ref) => ResponsiveNotifier(),
-);
+      (ref) => ResponsiveNotifier(),
+    );

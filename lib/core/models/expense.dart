@@ -1,4 +1,5 @@
 // lib/models/Expense_model.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -6,7 +7,7 @@ class Expense {
   final UuidValue expenseId;
   final String? name;
   final String? note;
-  final String? amount;
+  final double? amount;
   final String? date;
   final String? time;
   final DateTime? lastModified;
@@ -28,7 +29,7 @@ class Expense {
       'expenseId': expenseId.toString(),
       'name': name ?? '',
       'note': note ?? '',
-      'amount': amount ?? '',
+      'amount': amount ?? 0.0,
       'date': date ?? '',
       'time': time ?? '',
       'lastModified': lastModified?.millisecondsSinceEpoch, // store int ✔
@@ -57,7 +58,7 @@ class Expense {
       'expenseId': expenseId.toString(), // REQUIRED
       'name': name ?? '',
       'note': note ?? '',
-      'amount': amount ?? '',
+      'amount': amount ?? 0.0,
       'date': date ?? '',
       'time': time ?? '',
       "lastModified": lastModified != null
@@ -92,5 +93,29 @@ class Expense {
   String get formattedDate {
     if (lastModified == null) return "N/A";
     return DateFormat('dd-MM-yyyy').format(lastModified!);
+  }
+
+  // import 'package:cloud_firestore/cloud_firestore.dart';
+
+  Map<String, dynamic> toFirebaseMap() {
+    return {
+      "expenseId": expenseId.toString(),
+      "name": name ?? '',
+      "amount": amount ?? 0.0,
+      "note": note ?? '',
+      "date": date != null ? Timestamp.fromDate(date! as DateTime) : null,
+      "time": time,
+    };
+  }
+
+  factory Expense.fromFirebaseMap(Map<String, dynamic> json) {
+    return Expense(
+      expenseId: UuidValue(json["expenseId"]),
+      name: json["name"],
+      amount: (json["amount"] as num).toDouble(),
+      note: json["note"],
+      date: json["date"],
+      time: json["time"],
+    );
   }
 }

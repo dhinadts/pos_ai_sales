@@ -1,11 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pos_ai_sales/core/db/customer/sqlite_service_riverpod.dart';
+import 'package:pos_ai_sales/core/firebase/firebase_customers_service.dart' hide firebaseCustomersServiceProvider;
 import 'package:pos_ai_sales/core/models/customer.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/common_button.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/text_box.dart';
-import 'package:uuid/uuid_value.dart';
+import 'package:uuid/uuid.dart';
 
 class EditCustomerScreen extends ConsumerStatefulWidget {
   final UuidValue customerId;
@@ -41,18 +43,137 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
   }
 
   Future<void> _loadCustomer() async {
-    final c = await ref
-        .read(customerRepoProvider)
-        .byId(widget.customerId.toString());
-    if (c != null) {
-      nameCtrl.text = c.name;
-      phoneCtrl.text = c.phone ?? '';
-      emailCtrl.text = c.email ?? '';
-      addressCtrl.text = c.address ?? '';
+    if (kIsWeb) {
+      try {
+        final customer = await ref
+            .read(firebaseCustomersServiceProvider)
+            .byId(widget.customerId.toString());
+        if (mounted) {
+          setState(() {
+            nameCtrl.text = customer.name;
+            phoneCtrl.text = customer.phone ?? '';
+            emailCtrl.text = customer.email ?? '';
+            addressCtrl.text = customer.address ?? '';
+          });
+        }
+      } catch (e) {
+        print('Error loading customer: $e');
+      }
+    } else {
+      final c = await ref
+          .read(customerRepoProvider)
+          .byId(widget.customerId.toString());
+      if (c != null) {
+        nameCtrl.text = c.name;
+        phoneCtrl.text = c.phone ?? '';
+        emailCtrl.text = c.email ?? '';
+        addressCtrl.text = c.address ?? '';
+      }
     }
   }
 
   Future<void> _save() async {
+    final repo = ref.read(customerRepoProvider);
+    final firebase = ref.read(firebaseCustomersServiceProvider);
+
+    // Generate ID only for new customer
+    final id = (widget.mode == "edit") ? widget.customerId : Uuid().v4();
+
+    final data = Customer(
+      customerId: UuidValue(id.toString()), // Use plain String ID
+      name: nameCtrl.text,
+      phone: phoneCtrl.text,
+      email: emailCtrl.text,
+      address: addressCtrl.text,
+      imagePath: null,
+      lastModified: DateTime.now(),
+    );
+
+    if (kIsWeb) {
+      // --------------------
+      // WEB → Firebase only
+      // --------------------
+      if (widget.mode == "edit") {
+        await firebase.updateCustomer(data);
+      } else {
+        await firebase.addCustomer(data);
+      }
+    } else {
+      // --------------------
+      // MOBILE → SQLite only
+      // --------------------
+      if (widget.mode == "edit") {
+        await repo.update(data);
+      } else {
+        await repo.save(data);
+      }
+    }
+
+    // Refresh Customer List UI
+    ref.invalidate(customerListProvider);
+
+    // Navigate back
+    context.go('/customers');
+  }
+
+  /* Future<void> _save() async {
+    final repo = ref.read(customerRepoProvider);
+
+    // Generate NEW ID only for add mode
+    final id = (widget.mode == "edit")
+        ? widget.customerId
+        : Uuid().v4();
+
+    final customer = Customer(
+      customerId: widget.customerId,
+      name: nameCtrl.text,
+      phone: phoneCtrl.text,
+      email: emailCtrl.text,
+      address: addressCtrl.text,
+      imagePath: null,
+      lastModified: DateTime.now(),
+    );
+
+    if (kIsWeb) {
+      // -------------------------------
+      // 🔵 FIREBASE (WEB)
+      // -------------------------------
+      final firebase = ref.read(firebaseCustomersServiceProvider);
+
+      if (widget.mode == "add") {
+        await firebase.addCustomer(customer);
+      } else {
+        await firebase.updateCustomer(customer);
+      }
+
+      // refresh firebase list
+      ref.invalidate(customerListProviderFirebase);
+    } else {
+      // -------------------------------
+      // 🟢 SQLITE (MOBILE)
+      // -------------------------------
+      final repo = ref.read(customerRepoProvider);
+
+      if (widget.mode == "add") {
+        await repo.save(customer);
+      } else {
+        await repo.update(customer);
+      }
+
+      // refresh sqlite list
+      ref.invalidate(customerListProviderLocal);
+    }
+
+    // refresh combined list provider (optional but safe)
+    ref.invalidate(customerListProvider);
+
+    // navigate back
+    if (mounted) {
+      context.go('/customers');
+    }
+  }
+ */
+  /* Future<void> _save() async {
     final repo = ref.read(customerRepoProvider);
 
     final data = Customer(
@@ -75,6 +196,7 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
     context.go('/customers');
   }
 
+ */
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid_value.dart';
 
@@ -9,7 +10,7 @@ class Customer {
   final String? address;
   final String? imagePath;
   final DateTime? lastModified;
-  int deleted = 0;
+  int deleted;
 
   Customer({
     required this.customerId,
@@ -30,50 +31,47 @@ class Customer {
       phone: json['phone'] as String?,
       address: json['address'] as String?,
       imagePath: json['imagePath'] as String?,
-      lastModified: DateTime.fromMillisecondsSinceEpoch(
-        json['lastModified'] as int,
-      ),
-      deleted: json['deleted'] as int,
+      lastModified: _parseTimestamp(json['lastModified']),
+      deleted: (json['deleted'] as int?) ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'customerId': customerId,
+      'customerId': customerId.toString(),
       'name': name,
       'email': email,
       'phone': phone,
       'address': address,
       'imagePath': imagePath,
-      'lastModified': lastModified,
+      'lastModified': lastModified?.millisecondsSinceEpoch,
       'deleted': deleted,
     };
   }
 
   Customer copyWith({
-    String? customerId,
+    UuidValue? customerId,
     String? name,
     String? email,
     String? phone,
     String? address,
-    int? lastModified,
-    bool? deleted,
+    String? imagePath,
+    DateTime? lastModified,
+    int? deleted,
   }) {
     return Customer(
-      customerId: customerId != null ? UuidValue(customerId) : this.customerId,
+      customerId: customerId ?? this.customerId,
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
       address: address ?? this.address,
       imagePath: imagePath ?? this.imagePath,
-      lastModified: lastModified != null
-          ? DateTime.fromMillisecondsSinceEpoch(lastModified)
-          : this.lastModified,
-      deleted: this.deleted,
+      lastModified: lastModified ?? this.lastModified,
+      deleted: deleted ?? this.deleted,
     );
   }
 
-  // sqlite map
+  // SQLite map
   Map<String, dynamic> toSqliteMap() {
     return {
       "customerId": customerId.toString(),
@@ -81,35 +79,22 @@ class Customer {
       "email": email,
       "phone": phone,
       "address": address,
-      "lastModified": lastModified?.millisecondsSinceEpoch,
-      "deleted": deleted,
       "imagePath": imagePath,
-      "lastModified": lastModified != null
-          ? DateFormat('dd-MM-yyyy').format(lastModified!)
-          : null,
+      "lastModified": lastModified?.millisecondsSinceEpoch,
       "deleted": deleted,
     };
   }
 
   factory Customer.fromSqliteMap(Map<String, dynamic> m) {
-    DateTime? parsedDate;
-    if (m["lastModified"] != null && m["lastModified"].toString().isNotEmpty) {
-      try {
-        parsedDate = DateFormat('dd-MM-yyyy').parse(m["lastModified"]);
-      } catch (_) {
-        parsedDate = null;
-      }
-    }
     return Customer(
-      customerId: UuidValue(m["customerId"]),
-      name: m["name"] ?? "",
-      email: m["email"] ?? "",
-      phone: m["phone"] ?? "",
-      address: m["address"] ?? "",
-
-      imagePath: m["imagePath"] ?? null,
-      lastModified: parsedDate,
-      deleted: m["deleted"] ?? 0,
+      customerId: UuidValue(m["customerId"] as String),
+      name: m["name"] as String? ?? "",
+      email: m["email"] as String?,
+      phone: m["phone"] as String?,
+      address: m["address"] as String?,
+      imagePath: m["imagePath"] as String?,
+      lastModified: _parseTimestamp(m["lastModified"]),
+      deleted: (m["deleted"] as int?) ?? 0,
     );
   }
 
@@ -117,5 +102,92 @@ class Customer {
   String get formattedDate {
     if (lastModified == null) return "N/A";
     return DateFormat('dd-MM-yyyy').format(lastModified!);
+  }
+
+  Map<String, dynamic> toFirebaseMap() {
+    return {
+      "customerId": customerId.toString(),
+      "name": name,
+      "email": email,
+      "phone": phone,
+      "address": address,
+      "imagePath": imagePath,
+      "lastModified": lastModified != null
+          ? Timestamp.fromDate(lastModified!)
+          : FieldValue.serverTimestamp(),
+      "deleted": deleted,
+    };
+  }
+
+  factory Customer.fromFirebaseMap(Map<String, dynamic> json) {
+    return Customer(
+      customerId: UuidValue(json["customerId"] as String),
+      name: json["name"] as String? ?? "",
+      email: json["email"] as String?,
+      phone: json["phone"] as String?,
+      address: json["address"] as String?,
+      imagePath: json["imagePath"] as String?,
+      lastModified: _parseFirebaseTimestamp(json["lastModified"]),
+      deleted: (json["deleted"] as int?) ?? 0,
+    );
+  }
+
+  // Helper methods for timestamp parsing
+  static DateTime? _parseTimestamp(dynamic value) {
+    if (value == null) return null;
+
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    }
+    if (value is String) {
+      try {
+        return DateFormat('dd-MM-yyyy').parse(value);
+      } catch (_) {
+        return null;
+      }
+    }
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+    return null;
+  }
+
+  static DateTime? _parseFirebaseTimestamp(dynamic value) {
+    if (value == null) return null;
+
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    }
+    if (value is String) {
+      try {
+        // Try parsing ISO string first, then custom format
+        return DateTime.parse(value);
+      } catch (_) {
+        try {
+          return DateFormat('dd-MM-yyyy').parse(value);
+        } catch (_) {
+          return null;
+        }
+      }
+    }
+    return null;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Customer &&
+          runtimeType == other.runtimeType &&
+          customerId == other.customerId;
+
+  @override
+  int get hashCode => customerId.hashCode;
+
+  @override
+  String toString() {
+    return 'Customer(customerId: $customerId, name: $name, email: $email, phone: $phone, deleted: $deleted)';
   }
 }

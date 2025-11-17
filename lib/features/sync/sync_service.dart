@@ -18,7 +18,7 @@ class SyncService {
       }
     });
   }
-
+  
   Future<void> sync(String shopId) async {
     debugPrint("Syncing data for shopId: $shopId");
 

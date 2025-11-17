@@ -617,7 +617,8 @@ class _ReportChartWidgetState extends State<ReportChartWidget> {
                   color: Colors.blueAccent,
                 ),
               ),
-              DropdownButton<String>(
+              SizedBox(),
+              /*     DropdownButton<String>(
                 value: _selectedChartType,
                 items: const [
                   DropdownMenuItem(
@@ -637,6 +638,7 @@ class _ReportChartWidgetState extends State<ReportChartWidget> {
                   }
                 },
               ),
+           */
             ],
           ),
           const SizedBox(height: 16),

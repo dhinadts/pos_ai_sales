@@ -1,4 +1,5 @@
 // lib/models/product_model.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -128,5 +129,47 @@ class Product {
   String get formattedDate {
     if (lastModified == null) return "N/A";
     return DateFormat('dd-MM-yyyy').format(lastModified!);
+  }
+
+  Map<String, dynamic> toFirebaseMap() {
+    return {
+      "productId": productId.toString(),
+      "name": name,
+      "code": code,
+      "category": category,
+      "description": description,
+      "buyPrice": buyPrice,
+      "sellPrice": sellPrice,
+      "stock": stock,
+      "weight": weight,
+      "weightUnit": weightUnit,
+      "supplier": supplier,
+      "imagePath": imagePath,
+      "lastModified": lastModified != null
+          ? Timestamp.fromDate(lastModified!)
+          : null,
+      "deleted": deleted,
+    };
+  }
+
+  factory Product.fromFirebaseMap(Map<String, dynamic> json) {
+    return Product(
+      productId: UuidValue(json["productId"]),
+      name: json["name"] ?? "",
+      code: json["code"] ?? "",
+      category: json["category"] ?? "",
+      description: json["description"] ?? "",
+      buyPrice: (json["buyPrice"] ?? 0).toDouble(),
+      sellPrice: (json["sellPrice"] ?? 0).toDouble(),
+      stock: (json["stock"] ?? 0).toInt(),
+      weight: (json["weight"] ?? 0).toDouble(),
+      weightUnit: json["weightUnit"] ?? "",
+      supplier: json["supplier"] ?? "",
+      imagePath: json["imagePath"],
+      lastModified: json["lastModified"] != null
+          ? (json["lastModified"] as Timestamp).toDate()
+          : null,
+      deleted: json["deleted"] ?? 0,
+    );
   }
 }

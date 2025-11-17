@@ -50,7 +50,7 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
       nameCtrl.text = c.name ?? 'Empl Sal';
 
       noteCtrl.text = c.note ?? "Salary";
-      amountCtrl.text = c.amount ?? "10000";
+      amountCtrl.text = c.amount?.toString() ?? "0.0";
       dateCtrl.text = c.date ?? "2020-03-27";
       timeCtrl.text = c.time ?? "11:30 PM";
     }
@@ -63,7 +63,7 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
       expenseId: widget.expenseId,
       name: nameCtrl.text,
       note: noteCtrl.text,
-      amount: amountCtrl.text,
+      amount: double.tryParse(amountCtrl.text) ?? 0.0,
       date: dateCtrl.text,
       time: timeCtrl.text,
       // imagePath: null,
@@ -118,7 +118,11 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
 
               const Text("Expense Amount"),
               const SizedBox(height: 8),
-              EditableFieldBox(value: "Amount", controller: amountCtrl),
+              EditableFieldBox(
+                value: "Amount",
+                controller: amountCtrl,
+                fieldType: FieldType.decimal,
+              ),
               const SizedBox(height: 16),
 
               const Text("Expense Date"),

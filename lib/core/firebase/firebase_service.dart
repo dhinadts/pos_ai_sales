@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 class FirebaseService {
   final FirebaseApp app;
@@ -40,6 +41,7 @@ class FirebaseService {
   }
 }
 
+final firebaseReadyProvider = StateProvider<bool>((_) => false);
 final firebaseProvider = FutureProvider<FirebaseService>((ref) async {
   return FirebaseService.init();
 });

@@ -54,6 +54,36 @@ class Supplier {
     };
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      "supplierId": supplierId.toString(),
+      "name": name,
+      "contactName": contactName,
+      "email": email,
+      "phone": phone,
+      "address": address,
+      "imagePath": imagePath,
+      "lastModified": lastModified?.millisecondsSinceEpoch,
+      "deleted": deleted,
+    };
+  }
+
+  factory Supplier.fromMap(Map<String, dynamic> map) {
+    return Supplier(
+      supplierId: UuidValue(map["supplierId"]),
+      name: map["name"] ?? "",
+      contactName: map["contactName"],
+      email: map["email"],
+      phone: map["phone"],
+      address: map["address"],
+      imagePath: map["imagePath"],
+      lastModified: map["lastModified"] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map["lastModified"])
+          : null,
+      deleted: map["deleted"] ?? 0,
+    );
+  }
+
   Supplier copyWith({
     String? supplierId,
     String? name,

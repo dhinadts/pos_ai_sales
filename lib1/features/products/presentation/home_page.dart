@@ -15,7 +15,7 @@ class HomePage extends ConsumerWidget {
     _HomeTile('Products', Icons.inventory_2, '/products'),
     _HomeTile('Sales', Icons.point_of_sale, '/sales'),
     _HomeTile('Sales Report', Icons.bar_chart, '/sales/report'),
-    _HomeTile('Expense', Icons.account_balance_wallet, '/expenses'),
+    _HomeTile('Expense', Icons.account_balance_wallet, '/expense'),
     _HomeTile('All Orders', Icons.receipt_long, '/orders'),
     _HomeTile('Settings', Icons.settings, '/settings'),
   ];

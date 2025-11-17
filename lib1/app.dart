@@ -3,9 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pos_ai_sales/features/products/presentation/expense/expense_edit_screen.dart';
-import 'package:pos_ai_sales/features/products/presentation/expense/expense_list.screen.dart';
-import 'package:pos_ai_sales/features/products/presentation/orders/orders_list.dart';
+import 'package:uuid/uuid.dart';
 
 // ✅ Screens
 import 'package:pos_ai_sales/features/products/presentation/splash_screen.dart';
@@ -16,11 +14,6 @@ import 'package:pos_ai_sales/features/products/presentation/customers/customers_
 import 'package:pos_ai_sales/features/products/presentation/customers/customer_input.dart';
 import 'package:pos_ai_sales/features/products/presentation/all_sales_transactions/sales_all.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/reports_home_screen.dart';
-import 'package:pos_ai_sales/features/products/presentation/suppliers/edit_supplier_screen.dart';
-import 'package:pos_ai_sales/features/products/presentation/suppliers/supplier_list_screen.dart';
-import 'package:pos_ai_sales/features/products/presentation/settings/settings_screen.dart';
-
-import 'package:uuid/uuid.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -103,34 +96,5 @@ final _router = GoRouter(
         return EditCustomerScreen(customerId: customerId, mode: mode);
       },
     ),
-
-    GoRoute(
-      path: '/suppliers',
-      builder: (_, __) => const SuppliersListScreen(),
-    ),
-
-    GoRoute(
-      path: '/suppliers/edit/:supplierId',
-      builder: (context, state) {
-        final supplierId = UuidValue(state.pathParameters['supplierId']!);
-        final mode = state.uri.queryParameters['mode'] ?? 'add';
-        return AddSupplierScreen(supplierId: supplierId, mode: mode);
-      },
-    ),
-
-    GoRoute(path: '/expenses', builder: (_, __) => const ExpensesList()),
-
-    GoRoute(
-      path: '/expenses/edit/:expenseId',
-      builder: (context, state) {
-        final expenseId = UuidValue(state.pathParameters['expenseId']!);
-        final mode = state.uri.queryParameters['mode'] ?? 'add';
-        return EditExpenseScreen(expenseId: expenseId, mode: mode);
-      },
-    ),
-
-    GoRoute(path: '/orders', builder: (_, __) => const OrdersList()),
-
-    GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
   ],
 );

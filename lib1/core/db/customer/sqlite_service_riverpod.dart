@@ -63,8 +63,8 @@ class CustomerRepo {
   Future<int> hardDelete(String id) async {
     final db = await this.db.database;
     return await db.delete(
-      'customers',
-      where: 'customerId = ?',
+      'products',
+      where: 'productId = ?',
       whereArgs: [id.toString()],
     );
   }

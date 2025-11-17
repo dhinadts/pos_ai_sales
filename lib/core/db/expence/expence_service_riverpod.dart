@@ -1,50 +1,50 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pos_ai_sales/core/db/pos_db_service.dart';
-import 'package:pos_ai_sales/core/models/customer.dart';
+import 'package:pos_ai_sales/core/models/expense.dart';
 
 /// provider
-final customerRepoProvider = Provider<CustomerRepo>((ref) {
-  return CustomerRepo(PosDbService());
+final ExpenseRepoProvider = Provider<ExpenseRepo>((ref) {
+  return ExpenseRepo(PosDbService());
 });
 
 /// repository
-class CustomerRepo {
+class ExpenseRepo {
   final PosDbService db;
-  CustomerRepo(this.db);
+  ExpenseRepo(this.db);
 
-  Future<int> save(Customer c) async {
+  Future<int> save(Expense c) async {
     final db = await this.db.database;
-    return await db.insert('customers', c.toSqliteMap());
+    return await db.insert('expenses', c.toSqliteMap());
   }
 
-  Future<List<Customer>> all() async {
+  Future<List<Expense>> all() async {
     final db = await this.db.database;
     final rows = await db.query(
-      'customers',
+      'expenses',
       where: 'deleted = ?',
       whereArgs: [0],
     );
-    return rows.map(Customer.fromSqliteMap).toList();
+    return rows.map(Expense.fromSqliteMap).toList();
   }
 
-  Future<Customer?> byId(String id) async {
+  Future<Expense?> byId(String id) async {
     final db = await this.db.database;
     final rows = await db.query(
-      'customers',
-      where: 'customerId = ?',
+      'expenses',
+      where: 'expenseId = ?',
       whereArgs: [id],
     );
     if (rows.isEmpty) return null;
-    return Customer.fromSqliteMap(rows.first);
+    return Expense.fromSqliteMap(rows.first);
   }
 
-  Future<int> update(Customer c) async {
+  Future<int> update(Expense c) async {
     final db = await this.db.database;
     return await db.update(
-      'customers',
+      'expenses',
       c.toSqliteMap(),
-      where: 'customerId = ?',
-      whereArgs: [c.customerId],
+      where: 'expenseId = ?',
+      whereArgs: [c.expenseId],
     );
   }
 
@@ -52,9 +52,9 @@ class CustomerRepo {
   Future<int> softDelete(String id) async {
     final db = await this.db.database;
     return await db.update(
-      'customers',
+      'expenses',
       {'deleted': 1},
-      where: 'customerId = ?',
+      where: 'expenseId = ?',
       whereArgs: [id.toString()],
     );
   }
@@ -63,8 +63,8 @@ class CustomerRepo {
   Future<int> hardDelete(String id) async {
     final db = await this.db.database;
     return await db.delete(
-      'customers',
-      where: 'customerId = ?',
+      'expenses',
+      where: 'expenseId = ?',
       whereArgs: [id.toString()],
     );
   }
@@ -75,6 +75,6 @@ class CustomerRepo {
   }
 }
 
-final customerListProvider = FutureProvider<List<Customer>>((ref) async {
-  return ref.read(customerRepoProvider).all();
+final ExpenseListProvider = FutureProvider<List<Expense>>((ref) async {
+  return ref.read(ExpenseRepoProvider).all();
 });

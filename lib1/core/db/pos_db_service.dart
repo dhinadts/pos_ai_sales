@@ -59,7 +59,7 @@ class PosDbService {
         )
         ''');
 
-        /*         // --------------------
+        // --------------------
         // ORDERS TABLE
         // --------------------
         await db.execute('''
@@ -71,7 +71,7 @@ class PosDbService {
           totalAmount REAL
         )
         ''');
- */
+
         // --------------------
         // SALES TABLE
         // --------------------
@@ -84,50 +84,6 @@ class PosDbService {
           price REAL,
           discount REAL,
           tax REAL
-        )
-        ''');
-
-        /// Suppliers Table
-        await db.execute('''
-        CREATE TABLE suppliers(
-          supplierId TEXT PRIMARY KEY,
-          name TEXT,
-          contactName TEXT,
-          phone TEXT,
-          email TEXT,
-          address TEXT,
-          imagePath TEXT,
-          lastModified INTEGER,
-          deleted INTEGER DEFAULT 0
-        )
-        ''');
-
-        /// Expenses Table
-        await db.execute('''
-        CREATE TABLE expenses(
-          expenseId TEXT PRIMARY KEY,
-          name TEXT,
-          note TEXT,
-          amount TEXT,
-          date TEXT,
-          time TEXT,
-          lastModified INTEGER,
-          deleted INTEGER DEFAULT 0
-        )
-        ''');
-        await db.execute('''
-          CREATE TABLE orders (
-          orderId TEXT PRIMARY KEY,
-          customerId TEXT,
-          customerName TEXT,
-          items TEXT,
-          subTotal REAL,
-          tax REAL,
-          discount REAL,
-          totalAmount REAL,
-          orderDate TEXT,
-          paymentMethod TEXT,
-          orderStatus TEXT
         )
         ''');
       },

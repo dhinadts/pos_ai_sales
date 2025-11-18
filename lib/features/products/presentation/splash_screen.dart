@@ -8,12 +8,9 @@ import 'package:pos_ai_sales/core/db/orders/orders_repository.dart';
 import 'package:pos_ai_sales/core/db/pos_db_service.dart';
 import 'package:pos_ai_sales/core/db/products/sqlite_service_riverpod.dart';
 import 'package:pos_ai_sales/core/db/sales/sales_repository.dart';
-import 'package:pos_ai_sales/core/firebase/firebase_customers_service.dart'
-    hide firebaseCustomersServiceProvider;
 import 'package:pos_ai_sales/core/firebase/firebase_orders_service.dart';
 import 'package:pos_ai_sales/core/firebase/firebase_product_service.dart';
 import 'package:pos_ai_sales/core/firebase/firebase_sales_service.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});

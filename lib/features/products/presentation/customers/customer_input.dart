@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pos_ai_sales/core/db/customer/sqlite_service_riverpod.dart';
-import 'package:pos_ai_sales/core/firebase/firebase_customers_service.dart' hide firebaseCustomersServiceProvider;
+import 'package:pos_ai_sales/core/firebase/firebase_customers_service.dart'
+    hide firebaseCustomersServiceProvider;
 import 'package:pos_ai_sales/core/models/customer.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/common_button.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/text_box.dart';
@@ -38,7 +39,113 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
     addressCtrl = TextEditingController();
 
     if (widget.mode == "edit") {
-      _loadCustomer();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadCustomer();
+      });
+    }
+    if (widget.mode == 'delete') {
+      _handleDeleteMode();
+    }
+  }
+
+  void _handleDeleteMode() async {
+    final customer = await ref
+        .read(customerRepoProvider)
+        .byId(widget.customerId.toString());
+    if (customer != null && mounted) {
+      _onDeleteCustomer(customer);
+    }
+  }
+
+  void _onDeleteCustomer(Customer customer) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Customer'),
+        content: Text(
+          'Are you sure you want to delete ${customer.name}? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete == true && mounted) {
+      await _performDelete(customer);
+    }
+  }
+
+  Future<void> _performDelete(Customer customer) async {
+    try {
+      // Show loading
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const CircularProgressIndicator.adaptive(),
+              const SizedBox(width: 16),
+              Text('Deleting ${customer.name}...'),
+            ],
+          ),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+
+      if (kIsWeb) {
+        // Delete from Firebase
+        await ref
+            .read(firebaseCustomersServiceProvider)
+            .deleteCustomer(customer.customerId.toString());
+      } else {
+        // Delete from SQLite (soft delete)
+        await ref
+            .read(customerRepoProvider)
+            .softDelete(customer.customerId.toString());
+
+        // Also delete from Firebase for sync
+        try {
+          await ref
+              .read(firebaseCustomersServiceProvider)
+              .deleteCustomer(customer.customerId.toString());
+        } catch (e) {
+          print('Firebase delete failed: $e');
+          // Continue with local delete
+        }
+      }
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${customer.name} deleted successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Refresh the customer list
+        ref.invalidate(customerListProvider);
+
+        context.go('/customers');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete customer: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -57,19 +164,78 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
           });
         }
       } catch (e) {
-        print('Error loading customer: $e');
+        debugPrint('Error loading customer: $e');
       }
     } else {
-      final c = await ref
+      /* final c = await ref
           .read(customerRepoProvider)
           .byId(widget.customerId.toString());
+      debugPrint('=== DEBUG: _loadCustomer() started ===');
+      debugPrint('📱 Platform: ${kIsWeb ? 'Web' : 'Mobile'}');
+      debugPrint('🔑 Customer ID: "${widget.customerId}"');
+      debugPrint('🔑 Customer ID type: ${widget.customerId.runtimeType}');
       if (c != null) {
         nameCtrl.text = c.name;
         phoneCtrl.text = c.phone ?? '';
         emailCtrl.text = c.email ?? '';
         addressCtrl.text = c.address ?? '';
       }
+    } */
+      try {
+        // Debug: Check if customerRepoProvider is working
+        final repo = ref.read(customerRepoProvider);
+        debugPrint('✅ CustomerRepo provider accessed');
+
+        // Debug: Check all customers first
+        debugPrint('📋 Checking all customers in database...');
+        final allCustomers = await repo.all();
+        debugPrint('📊 Total customers in database: ${allCustomers.length}');
+
+        for (int i = 0; i < allCustomers.length; i++) {
+          final customer = allCustomers[i];
+          debugPrint(
+            '  $i. ID: "${customer.customerId}" -> Name: "${customer.name}"',
+          );
+          debugPrint('     Type: ${customer.customerId.runtimeType}');
+        }
+
+        // Now try to get the specific customer
+        debugPrint(
+          '🔍 Searching for specific customer ID: "${widget.customerId}"',
+        );
+        final c = await repo.byId(widget.customerId.toString());
+
+        debugPrint('🎯 Query result: $c');
+
+        if (c != null) {
+          debugPrint('✅ Customer found: ${c.name}');
+          debugPrint('📝 Customer details:');
+          debugPrint('   - Phone: ${c.phone}');
+          debugPrint('   - Email: ${c.email}');
+          debugPrint('   - Address: ${c.address}');
+
+          setState(() {
+            nameCtrl.text = c.name;
+            phoneCtrl.text = c.phone ?? '';
+            emailCtrl.text = c.email ?? '';
+            addressCtrl.text = c.address ?? '';
+          });
+          debugPrint('✅ Text controllers updated');
+        } else {
+          debugPrint('❌ Customer not found in database');
+          debugPrint('💡 Possible issues:');
+          debugPrint('   1. Customer ID mismatch');
+          debugPrint('   2. Customer is soft deleted (deleted = 1)');
+          debugPrint('   3. Database corruption');
+          debugPrint('   4. Customer was never saved to SQLite');
+        }
+      } catch (e) {
+        debugPrint('❌ ERROR in _loadCustomer: $e');
+        debugPrint('Stack trace: ${e.toString()}');
+      }
     }
+
+    debugPrint('=== DEBUG: _loadCustomer() completed ===');
   }
 
   Future<void> _save() async {

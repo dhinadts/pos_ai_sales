@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pos_ai_sales/core/db/customer/sqlite_service_riverpod.dart';
 import 'package:pos_ai_sales/core/utilits/responsive_design.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/card_details.dart';
 import 'package:pos_ai_sales/features/products/presentation/customers/customer_change_notifier.dart';

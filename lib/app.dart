@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pos_ai_sales/features/products/presentation/orders/order_screen.dart';
 
 // Screens
 import 'package:pos_ai_sales/features/products/presentation/splash_screen.dart';
@@ -106,7 +107,7 @@ final _router = GoRouter(
       },
     ),
 
-    GoRoute(path: '/orders', builder: (_, __) => const OrdersList()),
+    GoRoute(path: '/orders', builder: (_, __) => const OrderScreen()),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
   ],
 );

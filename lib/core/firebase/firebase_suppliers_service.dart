@@ -15,7 +15,29 @@ class FirebaseSuppliersService {
 
   Future<List<Supplier>> getSuppliers() async {
     final snapshot = await _db.collection(collection).orderBy("name").get();
-    return snapshot.docs.map((e) => Supplier.fromMap(e.data())).toList();
+    return await snapshot.docs.map((e) => Supplier.fromMap(e.data())).toList();
+  }
+
+  Future<Supplier> byId(String id) async {
+    try {
+      final snapshot = await _db
+          .collection(collection)
+          .where("supplierId", isEqualTo: id)
+          .limit(1) // Limit to 1 result for efficiency
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        throw Exception('Supplier with id $id not found');
+      }
+
+      final doc = snapshot.docs.first;
+      final data = doc.data(); // as Map<String, dynamic>;
+
+      return Supplier.fromJson(data);
+    } catch (e) {
+      print('Error fetching customer by id $id: $e');
+      rethrow;
+    }
   }
 
   Future<void> updateSupplier(Supplier supplier) async {

@@ -1,12 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pos_ai_sales/core/db/customer/sqlite_service_riverpod.dart';
 import 'package:pos_ai_sales/core/utilits/responsive_design.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/card_details.dart';
 import 'package:pos_ai_sales/features/products/presentation/customers/customer_change_notifier.dart';
+import 'package:uuid/uuid.dart';
 
 class CustomersList extends ConsumerWidget {
   const CustomersList({super.key});
+  Future<void> _deleteCustomer(WidgetRef ref, BuildContext context,
+      UuidValue customerId, String customerName) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Customer'),
+        content: Text('Are you sure you want to delete $customerName?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        // Delete from Firebase
+        final firebaseService = ref.read(firebaseCustomersServiceProvider);
+        await firebaseService.deleteCustomer(customerId.toString());
+
+        // Refresh the list
+        ref.invalidate(customerListNotifierProvider);
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Customer deleted successfully')),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to delete customer: $e')),
+          );
+        }
+        // Refresh if deletion failed
+        ref.invalidate(customerListNotifierProvider);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -159,12 +206,12 @@ class CustomersList extends ConsumerWidget {
                                 ),
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: crossAxisCount,
-                                      crossAxisSpacing: responsive.width(3),
-                                      mainAxisSpacing: responsive.height(3),
-                                      childAspectRatio: responsive
-                                          .getAspectRatio(constraints.maxWidth),
-                                    ),
+                                  crossAxisCount: crossAxisCount,
+                                  crossAxisSpacing: responsive.width(3),
+                                  mainAxisSpacing: responsive.height(3),
+                                  childAspectRatio: responsive
+                                      .getAspectRatio(constraints.maxWidth),
+                                ),
                                 itemCount: customers.length,
                                 itemBuilder: (context, index) {
                                   final customer = customers[index];
@@ -173,9 +220,11 @@ class CustomersList extends ConsumerWidget {
                                     onEdit: () => context.go(
                                       '/customers/edit/${customer.customerId}?mode=edit',
                                     ),
-                                    onDelete: () => context.go(
-                                      '/customers/edit/${customer.customerId}?mode=delete',
-                                    ),
+                                    onDelete: () => _deleteCustomer(
+                                        ref,
+                                        context,
+                                        customer.customerId,
+                                        customer.name),
                                     responsive: responsive,
                                     pageTitle: 'customer',
                                     id: customer.customerId,
@@ -186,7 +235,7 @@ class CustomersList extends ConsumerWidget {
                               // Tablet - 2 columns or list based on orientation
                               final isLandscape =
                                   MediaQuery.of(context).orientation ==
-                                  Orientation.landscape;
+                                      Orientation.landscape;
                               final crossAxisCount = isLandscape ? 3 : 2;
 
                               return GridView.builder(
@@ -196,27 +245,26 @@ class CustomersList extends ConsumerWidget {
                                 ),
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: crossAxisCount,
-                                      crossAxisSpacing: responsive.width(12),
-                                      mainAxisSpacing: responsive.height(12),
-                                      childAspectRatio: isLandscape ? 1.4 : 1.2,
-                                    ),
+                                  crossAxisCount: crossAxisCount,
+                                  crossAxisSpacing: responsive.width(12),
+                                  mainAxisSpacing: responsive.height(12),
+                                  childAspectRatio: isLandscape ? 1.4 : 1.2,
+                                ),
                                 itemCount: customers.length,
                                 itemBuilder: (context, index) {
                                   final customer = customers[index];
                                   return CardItem(
-                                    pageTitle: 'customer',
-                                    id: customer.customerId,
-                                    customer: customer,
-                                    onEdit: () => context.go(
-                                      '/customers/edit/${customer.customerId}?mode=edit',
-                                    ),
-                                    onDelete: () => context.go(
-                                      '/customers/edit/${customer.customerId}?mode=delete',
-                                    ),
-
-                                    responsive: responsive,
-                                  );
+                                      pageTitle: 'customer',
+                                      id: customer.customerId,
+                                      customer: customer,
+                                      onEdit: () => context.go(
+                                            '/customers/edit/${customer.customerId}?mode=edit',
+                                          ),
+                                      onDelete: () => _deleteCustomer(
+                                          ref,
+                                          context,
+                                          customer.customerId,
+                                          customer.name));
                                 },
                               );
                             } else {
@@ -230,23 +278,23 @@ class CustomersList extends ConsumerWidget {
                                 itemBuilder: (context, index) {
                                   final customer = customers[index];
                                   return Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom: responsive.height(12),
-                                    ),
-                                    child: CardItem(
-                                      pageTitle: 'customer',
-                                      id: customer.customerId,
-                                      customer: customer,
-                                      onEdit: () => context.go(
-                                        '/customers/edit/${customer.customerId}?mode=edit',
+                                      padding: EdgeInsets.only(
+                                        bottom: responsive.height(12),
                                       ),
-                                      onDelete: () => context.go(
-                                        '/customers/edit/${customer.customerId}?mode=delete',
-                                      ),
-
-                                      responsive: responsive,
-                                    ),
-                                  );
+                                      child: CardItem(
+                                        pageTitle: 'customer',
+                                        id: customer.customerId,
+                                        customer: customer,
+                                        onEdit: () => context.go(
+                                          '/customers/edit/${customer.customerId}?mode=edit',
+                                        ),
+                                        onDelete: () => _deleteCustomer(
+                                            ref,
+                                            context,
+                                            customer.customerId,
+                                            customer.name),
+                                        responsive: responsive,
+                                      ));
                                 },
                               );
                             }
@@ -455,7 +503,17 @@ class CustomersList extends ConsumerWidget {
                                     onEdit: () => context.go(
                                       '/customers/edit/${customer.customerId}?mode=edit',
                                     ),
-                                    onDelete: () => context.go(
+                                    onDelete: () => _deleteCustomer(
+                                      ref, 
+                                      context, 
+                                      customer.customerId, 
+                                      customer.name
+                                    ),
+                                    responsive: responsive,
+                                    pageTitle: 'customer',
+                                    id: customer.customerId,
+                                  );
+                                }, context.go(
                                       '/customers/edit/${customer.customerId}?mode=delete',
                                     ),
                                   );
@@ -480,7 +538,17 @@ class CustomersList extends ConsumerWidget {
                                     onEdit: () => context.go(
                                       '/customers/edit/${customer.customerId}?mode=edit',
                                     ),
-                                    onDelete: () => context.go(
+                                    onDelete: () => _deleteCustomer(
+                                      ref, 
+                                      context, 
+                                      customer.customerId, 
+                                      customer.name
+                                    ),
+                                    responsive: responsive,
+                                    pageTitle: 'customer',
+                                    id: customer.customerId,
+                                  );
+                                }, context.go(
                                       '/customers/edit/${customer.customerId}?mode=delete',
                                     ),
                                   ),
@@ -620,7 +688,17 @@ class CustomersList extends ConsumerWidget {
                                 onEdit: () => context.go(
                                   '/customers/edit/${customer.customerId}?mode=edit',
                                 ),
-                                onDelete: () => context.go(
+                                onDelete: () => _deleteCustomer(
+                                      ref, 
+                                      context, 
+                                      customer.customerId, 
+                                      customer.name
+                                    ),
+                                    responsive: responsive,
+                                    pageTitle: 'customer',
+                                    id: customer.customerId,
+                                  );
+                                }, context.go(
                                   '/customers/edit/${customer.customerId}?mode=delete',
                                 ),
                               );
@@ -638,7 +716,17 @@ class CustomersList extends ConsumerWidget {
                                 onEdit: () => context.go(
                                   '/customers/edit/${customer.customerId}?mode=edit',
                                 ),
-                                onDelete: () => context.go(
+                                onDelete: () => _deleteCustomer(
+                                      ref, 
+                                      context, 
+                                      customer.customerId, 
+                                      customer.name
+                                    ),
+                                    responsive: responsive,
+                                    pageTitle: 'customer',
+                                    id: customer.customerId,
+                                  );
+                                }, context.go(
                                   '/customers/edit/${customer.customerId}?mode=delete',
                                 ),
                               );
@@ -743,7 +831,17 @@ class CustomersList extends ConsumerWidget {
                           onEdit: () => context.go(
                             '/customers/edit/${customer.customerId}?mode=edit',
                           ),
-                          onDelete: () => context.go(
+                          onDelete: () => _deleteCustomer(
+                                      ref, 
+                                      context, 
+                                      customer.customerId, 
+                                      customer.name
+                                    ),
+                                    responsive: responsive,
+                                    pageTitle: 'customer',
+                                    id: customer.customerId,
+                                  );
+                                }, context.go(
                             '/customers/edit/${customer.customerId}?mode=delete',
                           ),
                         );

@@ -1,7 +1,6 @@
-// lib/models/Expense_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_value.dart';
 
 class Expense {
   final UuidValue expenseId;
@@ -24,6 +23,31 @@ class Expense {
     this.deleted = 0,
   });
 
+  // CopyWith method
+  Expense copyWith({
+    UuidValue? expenseId,
+    String? name,
+    String? note,
+    double? amount,
+    String? date,
+    String? time,
+    DateTime? lastModified,
+    int? deleted,
+  }) {
+    return Expense(
+      expenseId: expenseId ?? this.expenseId,
+      name: name ?? this.name,
+      note: note ?? this.note,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+      time: time ?? this.time,
+      lastModified: lastModified ?? this.lastModified,
+      deleted: deleted ?? this.deleted,
+    );
+  }
+
+  // ... rest of your existing methods (toMap, fromMap, etc.)
+
   Map<String, dynamic> toMap() {
     return {
       'expenseId': expenseId.toString(),
@@ -32,14 +56,15 @@ class Expense {
       'amount': amount ?? 0.0,
       'date': date ?? '',
       'time': time ?? '',
-      'lastModified': lastModified?.millisecondsSinceEpoch, // store int ✔
+      'lastModified': lastModified?.millisecondsSinceEpoch,
       'deleted': deleted,
     };
   }
 
   factory Expense.fromMap(Map<String, dynamic> map) {
     return Expense(
-      expenseId: map['expenseId'],
+      expenseId:
+          UuidValue(map['expenseId']), // FIX: Convert string to UuidValue
       name: map['name'],
       note: map['note'],
       amount: map['amount'],
@@ -55,7 +80,7 @@ class Expense {
   // sqlite map
   Map<String, dynamic> toSqliteMap() {
     return {
-      'expenseId': expenseId.toString(), // REQUIRED
+      'expenseId': expenseId.toString(),
       'name': name ?? '',
       'note': note ?? '',
       'amount': amount ?? 0.0,
@@ -95,16 +120,17 @@ class Expense {
     return DateFormat('dd-MM-yyyy').format(lastModified!);
   }
 
-  // import 'package:cloud_firestore/cloud_firestore.dart';
-
+  // Fix for Firebase methods
   Map<String, dynamic> toFirebaseMap() {
     return {
       "expenseId": expenseId.toString(),
       "name": name ?? '',
       "amount": amount ?? 0.0,
       "note": note ?? '',
-      "date": date != null ? Timestamp.fromDate(date! as DateTime) : null,
-      "time": time,
+      "date": date ?? '', // FIX: Removed incorrect Timestamp conversion
+      "time": time ?? '',
+      "lastModified": FieldValue.serverTimestamp(), // FIX: Use server timestamp
+      "deleted": deleted,
     };
   }
 
@@ -116,6 +142,10 @@ class Expense {
       note: json["note"],
       date: json["date"],
       time: json["time"],
+      lastModified: json["lastModified"] != null
+          ? (json["lastModified"] as Timestamp).toDate()
+          : null,
+      deleted: json["deleted"] ?? 0,
     );
   }
 }

@@ -1,11 +1,11 @@
 name: pos_ai_sales
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.8.1
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -32,22 +32,23 @@ dependencies:
   printing: ^5.14.2
   intl: ^0.20.2
   image: ^4.3.0
+  # image: ^3.2.2 # Downgraded for compatibility
   fl_chart: ^0.68.0
   usb_thermal_printer_web: ^0.0.3
+  universal_html: ^2.3.0
+  flutter_blue_plus: ^2.0.2
+  js: ^0.6.7
+  blue_thermal_printer: ^1.2.3
+  esc_pos_utils_plus: ^2.0.4
+  esc_pos_printer_plus: ^0.1.1
   # sqflite_common_ffi: ^2.3.6
   # sqflite_common_ffi_web: ^1.0.1+1
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
 
-
 flutter:
-
   uses-material-design: true
-
-
-
-

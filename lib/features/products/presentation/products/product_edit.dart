@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pos_ai_sales/core/db/products/sqlite_service_riverpod.dart';
+import 'package:pos_ai_sales/core/firebase/firebase_product_service.dart';
 import 'package:pos_ai_sales/core/models/product.dart';
+import 'package:pos_ai_sales/features/products/presentation/products/product_change_notifier.dart';
 import 'package:uuid/uuid.dart';
 import 'package:go_router/go_router.dart';
 
@@ -52,8 +54,8 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
     Future.microtask(() async {
       if (widget.mode == "edit") {
         final p = await ref
-            .read(sqliteRepoProvider)
-            .getProduct(widget.productId.toString());
+            .read(firebaseProductsServiceProvider)
+            .getProductById(widget.productId.toString());
         if (p != null) {
           setState(() {
             loadedProduct = p;
@@ -126,35 +128,44 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
   Future<void> _onSave() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final product = Product(
-      productId: widget.productId!,
-      name: _nameCtl.text.trim(),
-      code: _codeCtl.text.trim(),
-      category: _categoryCtl.text.trim(),
-      description: _descCtl.text.trim(),
-      buyPrice: double.tryParse(_buyPriceCtl.text.trim()) ?? 0.0,
-      sellPrice: double.tryParse(_sellPriceCtl.text.trim()) ?? 0.0,
-      stock: int.tryParse(_stockCtl.text.trim()) ?? 0,
-      weight: double.tryParse(_weightCtl.text.trim()) ?? 0.0,
-      weightUnit: _weightUnit,
-      supplier: _supplier ?? '',
-      imagePath: _pickedImage?.path ?? '',
-      lastModified: DateTime.now(),
-    );
-    if (widget.mode == "edit") {
-      await ref.read(sqliteRepoProvider).updateProduct(product);
-    } else {
-      await ref.read(sqliteRepoProvider).addProduct(product);
+    try {
+      final product = Product(
+        productId: widget.productId ??
+            const Uuid().v4obj(), // FIX: Use v4obj() for UuidValue
+        name: _nameCtl.text.trim(),
+        code: _codeCtl.text.trim(),
+        category: _categoryCtl.text.trim(),
+        description: _descCtl.text.trim(),
+        buyPrice: double.tryParse(_buyPriceCtl.text.trim()) ?? 0.0,
+        sellPrice: double.tryParse(_sellPriceCtl.text.trim()) ?? 0.0,
+        stock: int.tryParse(_stockCtl.text.trim()) ?? 0,
+        weight: double.tryParse(_weightCtl.text.trim()) ?? 0.0,
+        weightUnit: _weightUnit,
+        supplier: _supplier,
+        imagePath: _pickedImage?.path, // FIX: Don't use empty string if null
+        lastModified: DateTime.now(),
+      );
+
+      if (widget.mode == "edit") {
+        await ref.read(firebaseProductsServiceProvider).updateProduct(product);
+      } else {
+        await ref.read(firebaseProductsServiceProvider).addProduct(product);
+      }
+
+      // Refresh the product list
+      ref.invalidate(productsListNotifierProvider);
+
+      // Navigate back
+      if (context.mounted) {
+        context.go('/products');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving product: $e')),
+        );
+      }
     }
-
-    // force refresh
-    ref.invalidate(productListProvider);
-
-    // go to list
-    context.go('/products');
-
-    // For demo, simply pop with product
-    // Navigator.of(context).pop(product);
   }
 
   @override

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pos_ai_sales/core/firebase/firebase_customers_service.dart';
 import 'package:pos_ai_sales/core/models/expense.dart';
 
 class FirebaseExpensesService {
@@ -43,6 +42,28 @@ class FirebaseExpensesService {
   Future<List<Expense>> loadAll() async {
     return await getExpenses();
   }
+
+  Future<Expense> byId(String id) async {
+    try {
+      final snapshot = await _db
+          .collection(collection)
+          .where("expenseId", isEqualTo: id)
+          .limit(1) // Limit to 1 result for efficiency
+          .get();
+
+      if (snapshot.docs.isEmpty) {
+        throw Exception('Customer with id $id not found');
+      }
+
+      final doc = snapshot.docs.first;
+      final data = doc.data(); // as Map<String, dynamic>;
+
+      return Expense.fromFirebaseMap(data);
+    } catch (e) {
+      print('Error fetching customer by id $id: $e');
+      rethrow;
+    }
+  }
 }
 
 final firebaseExpensesServiceProvider = Provider<FirebaseExpensesService>((
@@ -50,7 +71,7 @@ final firebaseExpensesServiceProvider = Provider<FirebaseExpensesService>((
 ) {
   return FirebaseExpensesService();
 });
-final customerListProviderFirebase = FutureProvider<List<Expense>>((ref) async {
+final expenseListProviderFirebase = FutureProvider<List<Expense>>((ref) async {
   final service = ref.read(firebaseExpensesServiceProvider);
   return await service.getExpenses();
 });

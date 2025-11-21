@@ -1,13 +1,16 @@
 import 'dart:io';
 import 'package:csv/csv.dart';
+import 'package:esc_pos_printer_plus/esc_pos_printer_plus.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:pos_ai_sales/core/utilits/thermal_printer/bluetooth_printer_service.dart';
 import 'package:pos_ai_sales/features/products/domain/sales_record.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/pdf_web_service.dart';
+import 'package:pos_ai_sales/features/products/presentation/sales_report/printer/thermal_printer_service.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/report_chart_widget.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/report_pdf_service.dart';
 
@@ -300,6 +303,77 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
         ),
         actions: [
           TextButton(
+              onPressed: () {
+                final SalesRecord? record = sale;
+
+                if (record == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('No record selected to print.')),
+                  );
+                  return;
+                }
+
+                showModalBottomSheet(
+                  context: context,
+                  builder: (ctx) {
+                    return SafeArea(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            title: Text('Print via Bluetooth Printer'),
+                            onTap: () async {
+                              Navigator.pop(ctx);
+
+                              final btService = BluetoothPrinterService();
+                              final devices =
+                                  await btService.getBondedDevices();
+
+                              if (devices.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'No paired Bluetooth devices found.')),
+                                );
+                                return;
+                              }
+
+                              // For demo: pick first device
+                              await btService.connect(devices.first);
+                              await btService.printSalesRecord(record);
+                              await btService.disconnect();
+                            },
+                          ),
+                          ListTile(
+                            title:
+                                Text('Print via Network Thermal Printer (IP)'),
+                            onTap: () async {
+                              Navigator.pop(ctx);
+
+                              final thermal = ThermalPrinterService();
+                              const printerIp =
+                                  '192.168.1.100'; // Replace with real printer IP
+
+                              final result = await thermal.printOverNetwork(
+                                  record, printerIp);
+
+                              if (result != PosPrintResult.success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Network print failed: $result')),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+              child: const Text('PRINT')),
+          TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('CLOSE'),
           ),
@@ -372,10 +446,10 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                       color: value == 'Active'
                           ? Colors.green
                           : value == 'Inactive'
-                          ? Colors.orange
-                          : value == 'Discontinued'
-                          ? Colors.red
-                          : Colors.grey,
+                              ? Colors.orange
+                              : value == 'Discontinued'
+                                  ? Colors.red
+                                  : Colors.grey,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -544,9 +618,8 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
               'productName': row[1]?.value.toString() ?? '',
               'total': row[2]?.value.toString() ?? '',
               'qty': row.length > 3 ? row[3]?.value.toString() ?? '1' : '1',
-              'unitPrice': row.length > 4
-                  ? row[4]?.value.toString() ?? '0'
-                  : '0',
+              'unitPrice':
+                  row.length > 4 ? row[4]?.value.toString() ?? '0' : '0',
               'code': row.length > 5 ? row[5]?.value.toString() ?? '' : '',
             }),
           );
@@ -689,7 +762,7 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
               tooltip: "Import CSV / Excel",
               onPressed: _isLoading ? null : _importFile,
             ),
-            IconButton(
+            /* IconButton(
               icon: _isLoading
                   ? const SizedBox(
                       width: 20,
@@ -702,7 +775,7 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                   : const Icon(Icons.picture_as_pdf),
               tooltip: "Export & Print PDF",
               onPressed: _isLoading ? null : _exportPdf,
-            ),
+            ), */
           ],
         ),
         body: _isLoading

@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pos_ai_sales/features/products/domain/sales_record.dart';
@@ -347,8 +348,12 @@ class _ReportChartWidgetState extends State<ReportChartWidget> {
         gridData: const FlGridData(show: true),
 
         titlesData: FlTitlesData(
-          leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: 500,
+              reservedSize: 45,
+            ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
@@ -546,6 +551,17 @@ class _ReportChartWidgetState extends State<ReportChartWidget> {
     return '${label.substring(0, 10)}...';
   }
 
+  double _getAspectRatio(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    if (screenSize.width > 1200) {
+      return 16 / 9; // Wide screen
+    } else if (screenSize.width > 768) {
+      return 4 / 3; // Tablet
+    } else {
+      return 1; // Square for mobile
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -642,12 +658,46 @@ class _ReportChartWidgetState extends State<ReportChartWidget> {
             ],
           ),
           const SizedBox(height: 16),
-          AspectRatio(
-            aspectRatio: 1.6,
-            child: _buildChart(_selectedChartType, aggregatedData),
-          ),
+          kIsWeb
+              ? Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: const [
+                      BoxShadow(
+                        blurRadius: 8,
+                        color: Colors.black12,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth:
+                          MediaQuery.of(context).size.width *
+                          0.7, // 90% of screen width
+                      maxHeight:
+                          MediaQuery.of(context).size.height *
+                          0.5, // 70% of screen height
+                      minWidth: 400, // Minimum width for web
+                      minHeight: 300, // Minimum height for web
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: _getAspectRatio(context),
+                      child: _buildChart(
+                        _selectedChartType,
+                        aggregatedData,
+                      ), // Dynamic aspect ratiochild: _buildChart(_selectedChartType, aggregatedData)),
+                    ),
+                  ),
+                )
+              : AspectRatio(
+                  aspectRatio: 1.6,
+                  child: _buildChart(_selectedChartType, aggregatedData),
+                ),
           const SizedBox(height: 16),
-          _buildLegend(aggregatedData),
+          // _buildLegend(aggregatedData),
         ],
       ),
     );

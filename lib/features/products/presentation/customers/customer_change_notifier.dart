@@ -25,10 +25,10 @@ class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
         firebaseList = await firebaseService.getCustomers();
       } else {
         // For mobile, fetch from both SQLite and Firebase
-        final localService = ref.read(customerRepoProvider);
+        // final localService = ref.read(customerRepoProvider);
         final firebaseService = ref.read(firebaseCustomersServiceProvider);
 
-        localList = await localService.all();
+        // localList = await localService.all();
         firebaseList = await firebaseService.getCustomers();
       }
 
@@ -119,8 +119,6 @@ class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
   }
 }
 
-final customerListNotifierProvider =
-    StateNotifierProvider.autoDispose<
-      CustomerListNotifier,
-      AsyncValue<List<Customer>>
-    >((ref) => CustomerListNotifier(ref));
+final customerListNotifierProvider = StateNotifierProvider.autoDispose<
+    CustomerListNotifier,
+    AsyncValue<List<Customer>>>((ref) => CustomerListNotifier(ref));

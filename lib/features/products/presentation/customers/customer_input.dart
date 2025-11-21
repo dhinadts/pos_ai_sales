@@ -44,14 +44,15 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
       });
     }
     if (widget.mode == 'delete') {
-      _handleDeleteMode();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleDeleteMode();
+      });
     }
   }
 
   void _handleDeleteMode() async {
-    final customer = await ref
-        .read(customerRepoProvider)
-        .byId(widget.customerId.toString());
+    final customer =
+        await ref.read(customerRepoProvider).byId(widget.customerId.toString());
     if (customer != null && mounted) {
       _onDeleteCustomer(customer);
     }
@@ -150,6 +151,67 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
   }
 
   Future<void> _loadCustomer() async {
+    debugPrint('=== DEBUG: _loadCustomer() started ===');
+    debugPrint('📱 Platform: ${kIsWeb ? 'Web' : 'Mobile'}');
+    debugPrint('🔑 Customer ID: "${widget.customerId}"');
+    debugPrint('🔑 Mode: "${widget.mode}"');
+
+    // Handle new customer case
+    if (widget.customerId == 'new' || widget.mode == 'add') {
+      debugPrint('🆕 Creating new customer - clearing form');
+      if (mounted) {
+        setState(() {
+          nameCtrl.clear();
+          phoneCtrl.clear();
+          emailCtrl.clear();
+          addressCtrl.clear();
+        });
+      }
+      debugPrint('=== DEBUG: _loadCustomer() completed (new customer) ===');
+      return;
+    }
+
+    try {
+      debugPrint('🌐 Loading from Firebase...');
+      final customer = await ref
+          .read(firebaseCustomersServiceProvider)
+          .byId(widget.customerId.toString());
+
+      if (customer != null && mounted) {
+        debugPrint('✅ Firebase customer loaded: ${customer.name}');
+        debugPrint('📝 Customer details:');
+        debugPrint('   - Phone: ${customer.phone}');
+        debugPrint('   - Email: ${customer.email}');
+        debugPrint('   - Address: ${customer.address}');
+
+        setState(() {
+          nameCtrl.text = customer.name;
+          phoneCtrl.text = customer.phone ?? '';
+          emailCtrl.text = customer.email ?? '';
+          addressCtrl.text = customer.address ?? '';
+        });
+        debugPrint('✅ Text controllers updated');
+      } else {
+        debugPrint('❌ Customer not found in Firebase');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Customer not found')),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ ERROR loading customer from Firebase: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading customer: $e')),
+        );
+      }
+    }
+
+    debugPrint('=== DEBUG: _loadCustomer() completed ===');
+  }
+
+/*   Future<void> _loadCustomer() async {
     if (kIsWeb) {
       try {
         final customer = await ref
@@ -237,8 +299,79 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
 
     debugPrint('=== DEBUG: _loadCustomer() completed ===');
   }
-
+ */
   Future<void> _save() async {
+    final firebase = ref.read(firebaseCustomersServiceProvider);
+
+    // Validate required fields
+    if (nameCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Customer name is required')),
+      );
+      return;
+    }
+
+    // Generate ID only for new customer
+    final id = (widget.mode == "edit") ? widget.customerId : Uuid().v4();
+
+    final customer = Customer(
+      customerId: UuidValue(id.toString()),
+      name: nameCtrl.text.trim(),
+      phone: phoneCtrl.text.trim().isEmpty ? null : phoneCtrl.text.trim(),
+      email: emailCtrl.text.trim().isEmpty ? null : emailCtrl.text.trim(),
+      address: addressCtrl.text.trim().isEmpty ? null : addressCtrl.text.trim(),
+      imagePath: null,
+      lastModified: DateTime.now(),
+    );
+
+    try {
+      debugPrint('💾 Saving customer to Firebase...');
+      debugPrint('   - Mode: ${widget.mode}');
+      debugPrint('   - ID: $id');
+      debugPrint('   - Name: ${customer.name}');
+
+      // Use Firebase for both web and mobile
+      if (widget.mode == "edit") {
+        await firebase.updateCustomer(customer);
+        debugPrint('✅ Customer updated in Firebase');
+      } else {
+        await firebase.addCustomer(customer);
+        debugPrint('✅ Customer added to Firebase');
+      }
+
+      // Refresh Customer List UI
+      ref.invalidate(customerListProvider);
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(widget.mode == "edit"
+                ? 'Customer updated successfully'
+                : 'Customer added successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+
+      // Navigate back
+      if (mounted) {
+        context.go('/customers');
+      }
+    } catch (e) {
+      debugPrint('❌ ERROR saving customer: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save customer: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+/*   Future<void> _save() async {
     final repo = ref.read(customerRepoProvider);
     final firebase = ref.read(firebaseCustomersServiceProvider);
 
@@ -281,7 +414,7 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
     // Navigate back
     context.go('/customers');
   }
-
+ */
   /* Future<void> _save() async {
     final repo = ref.read(customerRepoProvider);
 
@@ -365,6 +498,11 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
  */
   @override
   Widget build(BuildContext context) {
+    if (widget.mode == 'delete') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleDeleteMode();
+      });
+    }
     return WillPopScope(
       onWillPop: () async {
         // Handle the back button press
@@ -392,7 +530,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
           ),
           centerTitle: true,
         ),
-
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: SingleChildScrollView(
@@ -406,17 +543,14 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
                   value: "Walk in Customer",
                   controller: nameCtrl,
                 ),
-
                 const SizedBox(height: 18),
                 const Text("Customer Cell"),
                 const SizedBox(height: 6),
                 EditableFieldBox(value: "N/A", controller: phoneCtrl),
-
                 const SizedBox(height: 18),
                 const Text("Customer Email"),
                 const SizedBox(height: 6),
                 EditableFieldBox(value: "N/A", controller: emailCtrl),
-
                 const SizedBox(height: 18),
                 const Text("Customer Address"),
                 const SizedBox(height: 6),
@@ -425,9 +559,7 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
                   maxLines: 5,
                   controller: addressCtrl,
                 ),
-
                 const SizedBox(height: 40),
-
                 CommonButton(
                   title: widget.mode == "edit" ? "Update" : "Save",
                   onPressed: _save,

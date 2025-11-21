@@ -27,11 +27,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _start() async {
-    if (kIsWeb) {
-      await _initializeFirebase();
-    } else {
-      await _initializeSQLite();
-    }
+    // if (kIsWeb) {
+    await _initializeFirebase();
+    // } else {
+    // await _initializeSQLite();
+    // }
 
     if (mounted) {
       context.go('/home');
@@ -50,7 +50,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       await ref.read(firebaseCustomersServiceProvider).loadAll();
       await ref
           .read(firebaseProductsServiceProvider)
-          .loadAll(); /////    ordersis pending
+          .getProducts(); /////    ordersis pending
       await ref.read(firebaseSalesTransactionsProvider).loadAll();
       await ref.read(firebaseOrdersServiceProvider).loadAll();
 

@@ -133,7 +133,7 @@ final customerListProviderLocal = FutureProvider.autoDispose<List<Customer>>((
   }
 });
 
-/// Combined Customer List Provider
+/* /// Combined Customer List Provider
 final customerListProvider = FutureProvider.autoDispose<List<Customer>>((
   ref,
 ) async {
@@ -189,6 +189,28 @@ final customerListProvider = FutureProvider.autoDispose<List<Customer>>((
         return []; // Both failed, return empty list
       }
     }
+  }
+}); */
+
+final customerListProvider =
+    FutureProvider.autoDispose<List<Customer>>((ref) async {
+  try {
+    debugPrint('📱 Loading customers from Firebase...');
+
+    final firebaseService = ref.read(firebaseCustomersServiceProvider);
+    final customers = await firebaseService.getCustomers();
+
+    debugPrint('✅ Loaded ${customers.length} customers from Firebase');
+
+    // Sort by name
+    customers.sort((a, b) => a.name.compareTo(b.name));
+
+    return customers;
+  } catch (e) {
+    debugPrint('❌ Error loading customers from Firebase: $e');
+
+    // Show error in UI but return empty list to prevent crashes
+    return [];
   }
 });
 

@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pos_ai_sales/core/db/suppliers/sqflite_riverpod_suppliers.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/card_details.dart';
+import 'package:pos_ai_sales/features/products/presentation/suppliers/supplier_change_notifier.dart';
 
 class SuppliersListScreen extends ConsumerWidget {
   const SuppliersListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final suppliersAsync = ref.watch(supplierListProvider);
+    // final suppliersAsync = ref.watch(supplierListProvider);
     final isWeb = MediaQuery.of(context).size.width > 600;
+    // final responsive = ref.watch(responsiveProvider);
+    // final customersAsync = ref.watch(customerListProvider);
+    final suppliersAsync = ref.watch(supplierListNotifierProvider);
     return WillPopScope(
       onWillPop: () async {
         context.go('/home'); // go to home
@@ -34,7 +37,6 @@ class SuppliersListScreen extends ConsumerWidget {
             context.go('/suppliers/edit/new?mode=add');
           },
         ),
-
         body: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1000),
@@ -89,11 +91,11 @@ class SuppliersListScreen extends ConsumerWidget {
                           return GridView.builder(
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                  childAspectRatio: 1.3,
-                                ),
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 1.3,
+                            ),
                             itemCount: suppliers.length,
                             itemBuilder: (context, index) {
                               final supplier = suppliers[index];

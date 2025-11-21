@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pos_ai_sales/core/db/expence/expence_service_riverpod.dart';
+import 'package:pos_ai_sales/core/firebase/firebase_expenses_service.dart';
 import 'package:pos_ai_sales/core/models/expense.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/text_box.dart';
+import 'package:pos_ai_sales/features/products/presentation/expense/expense_change_notifier.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,7 +46,7 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
 
   Future<void> _loadCustomer() async {
     final c = await ref
-        .read(ExpenseRepoProvider)
+        .read(firebaseExpensesServiceProvider)
         .byId(widget.expenseId.toString());
     if (c != null) {
       nameCtrl.text = c.name ?? 'Empl Sal';
@@ -57,7 +59,7 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
   }
 
   Future<void> _save() async {
-    final repo = ref.read(ExpenseRepoProvider);
+    final repo = ref.read(firebaseExpensesServiceProvider);
 
     final data = Expense(
       expenseId: widget.expenseId,
@@ -71,9 +73,9 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
     );
 
     if (widget.mode == "edit") {
-      await repo.update(data);
+      await repo.updateExpense(data);
     } else {
-      await repo.save(data);
+      await repo.addExpense(data);
     }
 
     ref.invalidate(ExpenseListProvider); // refresh list screen
@@ -106,7 +108,6 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
               const SizedBox(height: 8),
               EditableFieldBox(value: "Expense Name", controller: nameCtrl),
               const SizedBox(height: 16),
-
               const Text("Expense Note (if any)"),
               const SizedBox(height: 8),
               EditableFieldBox(
@@ -115,7 +116,6 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
-
               const Text("Expense Amount"),
               const SizedBox(height: 8),
               EditableFieldBox(
@@ -124,17 +124,14 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
                 fieldType: FieldType.decimal,
               ),
               const SizedBox(height: 16),
-
               const Text("Expense Date"),
               const SizedBox(height: 8),
               EditableFieldBox(value: "Date", controller: dateCtrl),
               const SizedBox(height: 16),
-
               const Text("Expense Time"),
               const SizedBox(height: 8),
               EditableFieldBox(value: "Time", controller: timeCtrl),
               const SizedBox(height: 24),
-
               SizedBox(
                 width: double.infinity,
                 height: 55,

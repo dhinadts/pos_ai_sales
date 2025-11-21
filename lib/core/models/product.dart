@@ -145,9 +145,8 @@ class Product {
       "weightUnit": weightUnit,
       "supplier": supplier,
       "imagePath": imagePath,
-      "lastModified": lastModified != null
-          ? Timestamp.fromDate(lastModified!)
-          : null,
+      "lastModified":
+          lastModified != null ? Timestamp.fromDate(lastModified!) : null,
       "deleted": deleted,
     };
   }
@@ -172,4 +171,59 @@ class Product {
       deleted: json["deleted"] ?? 0,
     );
   }
+
+  // CopyWith method
+  Product copyWith({
+    UuidValue? productId,
+    String? name,
+    String? code,
+    String? category,
+    String? description,
+    double? buyPrice,
+    double? sellPrice,
+    int? stock,
+    double? weight,
+    String? weightUnit,
+    String? supplier,
+    String? imagePath,
+    DateTime? lastModified,
+    int? deleted,
+  }) {
+    return Product(
+      productId: productId ?? this.productId,
+      name: name ?? this.name,
+      code: code ?? this.code,
+      category: category ?? this.category,
+      description: description ?? this.description,
+      buyPrice: buyPrice ?? this.buyPrice,
+      sellPrice: sellPrice ?? this.sellPrice,
+      stock: stock ?? this.stock,
+      weight: weight ?? this.weight,
+      weightUnit: weightUnit ?? this.weightUnit,
+      supplier: supplier ?? this.supplier,
+      imagePath: imagePath ?? this.imagePath,
+      lastModified: lastModified ?? this.lastModified,
+      deleted: deleted ?? this.deleted,
+    );
+  }
+
+  /*  Map<String, dynamic> toFirebaseMap() {
+    return {
+      "productId": productId.toString(),
+      "name": name,
+      "code": code,
+      "category": category,
+      "description": description,
+      "buyPrice": buyPrice,
+      "sellPrice": sellPrice,
+      "stock": stock,
+      "weight": weight,
+      "weightUnit": weightUnit,
+      "supplier": supplier,
+      "imagePath": imagePath,
+      "lastModified": FieldValue.serverTimestamp(), // FIX: Use server timestamp
+      "deleted": deleted,
+    };
+  }
+ */
 }

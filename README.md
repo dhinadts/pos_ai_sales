@@ -89,7 +89,7 @@ Designed for **Android**, **Web**, and **Desktop**, the app offers a unified POS
 ---
 
 ## 📁 **Project Structure (Feature-Based Architecture)**
----
+```
 lib/
 ├── core/
 | ├── db/
@@ -107,9 +107,7 @@ lib/
 │   └── sales/
 ├── app.dart
 └── main.dart
-
-
----
+```
 
 ## 🧑‍🔧 **Installation Guide**
 
@@ -179,20 +177,23 @@ flutter build web
   <img src="assets/screenshots/customers.jpg" width="180"/>
   <img src="assets/screenshots/products.jpg" width="180"/>
   <img src="assets/screenshots/suppliers.jpg" width="180"/>
-  <img src="assets/screenshots/expenses.jpg" width="180"/>
+  
 
 </p>
 
 <p align="center">
+  <img src="assets/screenshots/expenses.jpg" width="180"/>
   <img src="assets/screenshots/adding-order-pos-order.jpg" width="180"/>
   <img src="assets/screenshots/product-cart.jpg" width="180"/>
   <img src="assets/screenshots/order-summary.jpg" width="180"/>
-  <img src="assets/screenshots/sales-transaction.jpg" width="180"/>
-  <img src="assets/screenshots/sales-details.jpg" width="180"/>
-  <img src="assets/screenshots/sales-report.jpg" width="180"/>
+  
   
 </p>
-
+<p align="center">
+<img src="assets/screenshots/sales-transaction.jpg" width="180"/>
+  <img src="assets/screenshots/sales-details.jpg" width="180"/>
+  <img src="assets/screenshots/sales-report.jpg" width="180"/>
+</p>
 ---
 
 

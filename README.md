@@ -239,12 +239,3 @@ For queries or custom development:
 
 ---
 
-If you want, I can also generate:
-
-✅ CONTRIBUTING.md  
-✅ CODE_OF_CONDUCT.md  
-✅ API Documentation  
-✅ Folder Structure Diagram  
-✅ App Icons + Branding  
-
-Just tell me!

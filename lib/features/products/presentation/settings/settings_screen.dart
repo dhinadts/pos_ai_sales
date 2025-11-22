@@ -46,8 +46,8 @@ class SettingsScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.cyan,
           title: const Text("Settings"),
-          backgroundColor: const Color(0xff00B4F0),
           leading: IconButton(
             onPressed: () => context.go('/home'),
             icon: Icon(Icons.arrow_back_ios),

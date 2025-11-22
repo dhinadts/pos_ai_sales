@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:pos_ai_sales/core/utilits/thermal_printer/bluetooth_printer_service.dart';
 import 'package:pos_ai_sales/features/products/domain/sales_record.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/pdf_web_service.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/printer/thermal_printer_service.dart';
@@ -322,33 +321,12 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                         children: [
                           ListTile(
                             title: Text('Print via Bluetooth Printer'),
-                            onTap: () async {
-                              Navigator.pop(ctx);
-
-                              final btService = BluetoothPrinterService();
-                              final devices =
-                                  await btService.getBondedDevices();
-
-                              if (devices.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'No paired Bluetooth devices found.')),
-                                );
-                                return;
-                              }
-
-                              // For demo: pick first device
-                              await btService.connect(devices.first);
-                              await btService.printSalesRecord(record);
-                              await btService.disconnect();
-                            },
                           ),
                           ListTile(
                             title:
                                 Text('Print via Network Thermal Printer (IP)'),
                             onTap: () async {
-                              Navigator.pop(ctx);
+                              /*   Navigator.pop(ctx);
 
                               final thermal = ThermalPrinterService();
                               const printerIp =
@@ -363,7 +341,7 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                                       content: Text(
                                           'Network print failed: $result')),
                                 );
-                              }
+                              } */
                             },
                           ),
                         ],
@@ -741,13 +719,13 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Sales Reports"),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.cyan,
           foregroundColor: Colors.white,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => context.go('/home'),
           ),
-          actions: [
+          /* actions: [
             IconButton(
               icon: _isLoading
                   ? const SizedBox(
@@ -761,8 +739,8 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                   : const Icon(Icons.file_upload),
               tooltip: "Import CSV / Excel",
               onPressed: _isLoading ? null : _importFile,
-            ),
-            /* IconButton(
+            ), */
+          /* IconButton(
               icon: _isLoading
                   ? const SizedBox(
                       width: 20,
@@ -775,8 +753,8 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                   : const Icon(Icons.picture_as_pdf),
               tooltip: "Export & Print PDF",
               onPressed: _isLoading ? null : _exportPdf,
-            ), */
-          ],
+            // ), */
+          // ],
         ),
         body: _isLoading
             ? const Center(

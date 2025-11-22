@@ -92,9 +92,9 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.mode == 'add' ? "Add Expense" : "Edit Expense"),
-          backgroundColor: const Color(0xff00B4F0),
+          backgroundColor: Colors.cyan,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => context.go('/expenses'),
             // FIX: go_router pop
           ),

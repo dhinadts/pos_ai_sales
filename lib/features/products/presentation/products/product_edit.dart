@@ -178,10 +178,10 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: turquoise,
+          backgroundColor: Colors.cyan,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => context.go('/products'),
           ),
           title: const Text(

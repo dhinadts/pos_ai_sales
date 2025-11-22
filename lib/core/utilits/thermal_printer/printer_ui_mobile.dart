@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+/* import 'dart:typed_data';
 
 import 'package:pos_ai_sales/core/utilits/thermal_printer/bluetooth_printer_service.dart';
 import 'package:printing/printing.dart';
@@ -70,3 +70,4 @@ class PdfPrintService {
     await printerService.printReceipt(items);
   }
 }
+ */

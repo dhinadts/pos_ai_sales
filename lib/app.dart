@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pos_ai_sales/features/products/presentation/all_sales_transactions/order_detail_screen.dart';
+import 'package:pos_ai_sales/features/products/presentation/all_sales_transactions/order_list_screen.dart';
 import 'package:pos_ai_sales/features/products/presentation/orders/order_screen.dart';
 
 // Screens
@@ -20,7 +22,6 @@ import 'package:pos_ai_sales/features/products/presentation/suppliers/supplier_l
 import 'package:pos_ai_sales/features/products/presentation/settings/settings_screen.dart';
 import 'package:pos_ai_sales/features/products/presentation/expense/expense_edit_screen.dart';
 import 'package:pos_ai_sales/features/products/presentation/expense/expense_list.screen.dart';
-import 'package:pos_ai_sales/features/products/presentation/orders/orders_list.dart';
 
 import 'package:uuid/uuid.dart';
 
@@ -65,7 +66,7 @@ final _router = GoRouter(
     ),
 
     /// Sales
-    GoRoute(path: '/sales', builder: (_, __) => const SalesAll()),
+    GoRoute(path: '/sales', builder: (_, __) => const OrdersListScreen()),
     GoRoute(
       path: '/sales/report',
       builder: (_, __) => const ReportsHomeScreen(),
@@ -108,6 +109,12 @@ final _router = GoRouter(
     ),
 
     GoRoute(path: '/orders', builder: (_, __) => const OrderScreen()),
+    GoRoute(
+      path: '/order-details/:orderId',
+      builder: (context, state) => OrderDetailsScreen(
+        orderId: state.pathParameters['orderId']!,
+      ),
+    ),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
   ],
 );

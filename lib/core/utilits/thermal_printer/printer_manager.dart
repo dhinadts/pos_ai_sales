@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+/* import 'package:flutter/foundation.dart';
 import 'package:pos_ai_sales/core/utilits/thermal_printer/bluetooth_printer_service.dart';
 import 'package:pos_ai_sales/core/utilits/thermal_printer/printer_ui_mobile.dart';
 import 'package:pos_ai_sales/core/utilits/thermal_printer/web_print_service.dart';
@@ -66,3 +66,4 @@ class PrintManager {
     }
   }
 }
+ */

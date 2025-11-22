@@ -18,53 +18,108 @@ class ProductCard extends ConsumerWidget {
 
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.image, size: 60, color: Colors.grey),
-            SizedBox(height: 10),
-            Text(product["name"],
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            Text(product["unit"], style: TextStyle(color: Colors.grey)),
-            SizedBox(height: 5),
-            Text("\$${product["price"]}",
-                style: TextStyle(fontSize: 18, color: Colors.cyan)),
-            Spacer(),
-            inCart
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.remove_circle_outline),
-                        onPressed: () =>
-                            cartNotifier.decreaseQty(product["id"]),
+            // IMAGE
+            Container(
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: product["imageUrl"] != null &&
+                      product["imageUrl"].toString().isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        product["imageUrl"],
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            const Icon(Icons.broken_image, size: 50),
                       ),
-                      Text(qty.toString(), style: TextStyle(fontSize: 18)),
-                      IconButton(
-                        icon: Icon(Icons.add_circle_outline),
-                        onPressed: () =>
-                            cartNotifier.increaseQty(product["id"]),
-                      ),
-                    ],
-                  )
-                : ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.cyan,
-                    ),
-                    onPressed: () {
-                      cartNotifier.addToCart(
-                        CartItem(
-                          id: product["id"],
-                          name: product["name"],
-                          unit: product["unit"],
-                          price: product["price"],
+                    )
+                  : const Icon(Icons.image, size: 60, color: Colors.grey),
+            ),
+
+            const SizedBox(height: 6),
+
+            // NAME
+            Text(
+              product["name"],
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+
+            // UNIT
+            Text(
+              product["unit"] ?? "",
+              style: const TextStyle(color: Colors.grey),
+            ),
+
+            const SizedBox(height: 6),
+
+            // PRICE
+            Text(
+              "₹${product["price"]}",
+              style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.cyan,
+                  fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 6),
+
+            // ADD OR QTY CONTROLLER
+            Expanded(
+              child: SizedBox(
+                height: 30,
+                width: double.infinity,
+                child: inCart
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.remove_circle_outline),
+                            onPressed: () =>
+                                cartNotifier.decreaseQty(product["id"]),
+                          ),
+                          Text(qty.toString(),
+                              style: const TextStyle(fontSize: 18)),
+                          IconButton(
+                            icon: const Icon(Icons.add_circle_outline),
+                            onPressed: () =>
+                                cartNotifier.increaseQty(product["id"]),
+                          ),
+                        ],
+                      )
+                    : ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.cyan,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
                         ),
-                      );
-                    },
-                    child: Text("ADD TO CART"),
-                  ),
+                        onPressed: () {
+                          cartNotifier.addToCart(
+                            CartItem(
+                              id: product["id"],
+                              name: product["name"],
+                              unit: product["unit"],
+                              price: product["price"],
+                            ),
+                          );
+                        },
+                        child: const Text("ADD TO CART",
+                            style: TextStyle(color: Colors.white)),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 6),
           ],
         ),
       ),

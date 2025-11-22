@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
-import 'package:pos_ai_sales/features/products/domain/sales_record.dart';
+import 'package:pos_ai_sales/features/products/presentation/orders/cart_model.dart';
+import 'package:pos_ai_sales/features/products/presentation/orders/cart_provider.dart';
 
-/// SERVICE: Handles Bluetooth Printer
+/// Handles Bluetooth Printer communication
 class BluetoothPrinterService {
   final BlueThermalPrinter _bt = BlueThermalPrinter.instance;
 
-  /// 🔵 Get all paired Bluetooth Printers
   Future<List<BluetoothDevice>> getBondedDevices() async {
     try {
       return await _bt.getBondedDevices();
@@ -17,7 +17,6 @@ class BluetoothPrinterService {
     }
   }
 
-  /// 🔵 Connect to selected device
   Future<bool> connect(BluetoothDevice device) async {
     try {
       await _bt.connect(device);
@@ -28,111 +27,106 @@ class BluetoothPrinterService {
     }
   }
 
-  /// 🔵 Disconnect device
   Future<void> disconnect() async {
     try {
       await _bt.disconnect();
     } catch (e) {
-      debugPrint("Bluetooth disconnect error: $e");
+      debugPrint("Disconnect error: $e");
     }
   }
 
-  /// 🔵 Print Single Sales Record
-  Future<void> printSalesRecord(SalesRecord record) async {
+  Future<void> printOrder({
+    required List<CartItem> items,
+    required double subtotal,
+    required double tax,
+    required double discount,
+    required double finalTotal,
+    required String customer,
+    required String orderType,
+    required String paymentMethod, required String orderId,
+  }) async {
     try {
       bool isConnected = await _bt.isConnected ?? false;
 
       if (!isConnected) {
         final devices = await getBondedDevices();
         if (devices.isEmpty) {
-          debugPrint("No paired printers found!");
+          debugPrint("No paired printers!");
           return;
         }
         await connect(devices.first);
       }
 
-      _bt.printCustom("SALES REPORT", 3, 1);
-      _bt.printLeftRight("Product", record.productName ?? "", 1);
-      _bt.printLeftRight("Qty", record.qty?.toString() ?? "1", 1);
-      _bt.printLeftRight("Amount", "₹${record.total}", 1);
-      _bt.printLeftRight("Date", record.date.toString(), 1);
-      _bt.printLeftRight("Category", record.category ?? "", 1);
+      _bt.printCustom("POS AI SALES", 3, 1);
+      _bt.printNewLine();
+      _bt.printLeftRight("Customer", customer, 1);
+      _bt.printLeftRight("Order Type", orderType, 1);
+      _bt.printLeftRight("Payment", paymentMethod, 1);
+      _bt.printNewLine();
+
+      _bt.printCustom("ITEMS", 2, 0);
+      for (var item in items) {
+        _bt.printLeftRight(item.name, "x${item.quantity}", 1);
+        _bt.printLeftRight("Unit Price", "₹${item.price}", 0);
+        _bt.printLeftRight("Total", "₹${item.total}", 0);
+        _bt.printNewLine();
+      }
+
+      _bt.printCustom("----------------------------", 1, 1);
+
+      _bt.printLeftRight("Subtotal", "₹$subtotal", 1);
+      _bt.printLeftRight("Tax", "₹$tax", 1);
+      _bt.printLeftRight("Discount", "₹$discount", 1);
+      _bt.printLeftRight("Final Total", "₹$finalTotal", 2);
+
       _bt.printNewLine();
       _bt.printCustom("Thank You!", 2, 1);
+      _bt.printNewLine();
     } catch (e) {
       debugPrint("Bluetooth print error: $e");
     }
   }
-
-  /// 🔵 Print multiple items (Receipt / Order)
-  Future<void> printReceipt(List<Map<String, dynamic>> items) async {
-    try {
-      final devices = await getBondedDevices();
-      if (devices.isEmpty) {
-        debugPrint("No Bluetooth printer paired!");
-        return;
-      }
-
-      await connect(devices.first);
-
-      _bt.printCustom("ORDER RECEIPT", 3, 1);
-      _bt.printNewLine();
-
-      for (var item in items) {
-        _bt.printLeftRight(
-          item['name'] ?? "",
-          "x${item['qty']}  ₹${item['price']}",
-          1,
-        );
-      }
-
-      _bt.printNewLine();
-      _bt.printCustom("Thank you!", 2, 1);
-    } catch (e) {
-      debugPrint("Receipt print error: $e");
-    }
-  }
-
-  /// 🔵 Discover paired printers (blue_thermal_printer limitation)
-  ///
-  /// NOTE:
-  /// blue_thermal_printer does NOT support scanning.
-  /// So the only available option is to return bonded devices.
-  Stream<List<BluetoothDevice>> discoverPrinters() async* {
-    List<BluetoothDevice> devices = await getBondedDevices();
-    yield devices;
-  }
-
-  /// 🔵 Connect wrapper used by PrinterManager
-  Future<bool> connectToPrinter(BluetoothDevice device) async {
-    return await connect(device);
-  }
 }
-
-/// MANAGER: High-Level API
 class PrinterManager {
   final BluetoothPrinterService _printerService = BluetoothPrinterService();
 
-  /// Print list of items as a receipt
-  Future<void> printOrderReceipt(List<Map<String, dynamic>> orderItems) async {
+  Future<void> printCartOrder({
+    required List<CartItem> items,
+    required double subtotal,
+    required double tax,
+    required double discount,
+    required double finalTotal,
+    required String customer,
+    required String orderType,
+    required String paymentMethod,
+    required String orderId
+  }) async {
     try {
-      await _printerService.printReceipt(orderItems);
+      await _printerService.printOrder(
+        items: items,
+        subtotal: subtotal,
+        tax: tax,
+        discount: discount,
+        finalTotal: finalTotal,
+        customer: customer,
+        orderType: orderType,
+        paymentMethod: paymentMethod,
+        orderId: orderId,
+      );
     } catch (e) {
-      debugPrint('Print error: $e');
-      rethrow;
+      debugPrint("Print error: $e");
     }
   }
 
-  /// Discover & connect to first available paired printer
   Future<bool> connectToFirstAvailablePrinter() async {
     try {
-      final printers = await _printerService.getBondedDevices();
-      if (printers.isNotEmpty) {
-        return await _printerService.connect(printers.first);
+      final devices = await _printerService.getBondedDevices();
+      if (devices.isNotEmpty) {
+        return await _printerService.connect(devices.first);
       }
       return false;
     } catch (e) {
-      debugPrint("Connection error: $e");
+      debugPrint("Printer connect error: $e");
       return false;
     }
   }

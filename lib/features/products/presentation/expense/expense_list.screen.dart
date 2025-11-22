@@ -25,14 +25,14 @@ class ExpensesList extends ConsumerWidget {
         backgroundColor: const Color(0xffF7F9FB),
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: const Color(0xff00B4F0),
+          backgroundColor: Colors.cyan,
           title: const Text(
             'All Expenses',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => context.go('/home'),
           ),
         ),

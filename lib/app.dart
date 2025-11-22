@@ -15,7 +15,6 @@ import 'package:pos_ai_sales/features/products/presentation/products/product_lis
 import 'package:pos_ai_sales/features/products/presentation/products/product_edit.dart';
 import 'package:pos_ai_sales/features/products/presentation/customers/customers_list.dart';
 import 'package:pos_ai_sales/features/products/presentation/customers/customer_input.dart';
-import 'package:pos_ai_sales/features/products/presentation/all_sales_transactions/sales_all.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/reports_home_screen.dart';
 import 'package:pos_ai_sales/features/products/presentation/suppliers/edit_supplier_screen.dart';
 import 'package:pos_ai_sales/features/products/presentation/suppliers/supplier_list_screen.dart';

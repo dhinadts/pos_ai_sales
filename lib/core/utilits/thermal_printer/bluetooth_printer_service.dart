@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:pos_ai_sales/features/products/presentation/orders/cart_model.dart';
-import 'package:pos_ai_sales/features/products/presentation/orders/cart_provider.dart';
 
 /// Handles Bluetooth Printer communication
 class BluetoothPrinterService {

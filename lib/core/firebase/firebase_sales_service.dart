@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pos_ai_sales/core/firebase/firebase_sales_report_service.dart';
 import "/features/products/presentation/all_sales_transactions/sales_modal.dart"
     as t;
 

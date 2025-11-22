@@ -6,4 +6,6 @@ final settingsServiceProvider = Provider<SettingsService>(
 
 class SettingsService {
   Future<void> init() async {}
+
+  Future<void> onTapped() async {}
 }

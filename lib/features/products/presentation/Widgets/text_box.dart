@@ -8,10 +8,8 @@ class EditableFieldBox extends StatefulWidget {
   final TextEditingController controller;
   final VoidCallback? onEdit;
 
-  /// NEW: Type of field (String / Int / Double)
   final FieldType fieldType;
 
-  /// NEW: Optional custom validator
   final String? Function(String?)? validator;
 
   const EditableFieldBox({
@@ -31,7 +29,6 @@ class EditableFieldBox extends StatefulWidget {
 class _EditableFieldBoxState extends State<EditableFieldBox> {
   String? errorText;
 
-  /// Built-in validator
   String? _defaultValidator(String? text) {
     if (text == null || text.trim().isEmpty) {
       return "This field cannot be empty";
@@ -57,7 +54,7 @@ class _EditableFieldBoxState extends State<EditableFieldBox> {
         }
     }
 
-    return null; // valid
+    return null;
   }
 
   void validate() {
@@ -107,8 +104,6 @@ class _EditableFieldBoxState extends State<EditableFieldBox> {
             ],
           ),
         ),
-
-        // Error message
         if (errorText != null)
           Padding(
             padding: const EdgeInsets.only(left: 6, top: 4),

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:pos_ai_sales/core/firebase/firebase_product_service.dart';
@@ -17,7 +16,6 @@ class ProductListNotifier extends StateNotifier<AsyncValue<List<Product>>> {
       final firebaseService = ref.read(firebaseProductsServiceProvider);
       final products = await firebaseService.getProducts();
 
-      // Sort by name
       products.sort((a, b) => a.name.compareTo(b.name));
 
       state = AsyncValue.data(products);
@@ -26,13 +24,11 @@ class ProductListNotifier extends StateNotifier<AsyncValue<List<Product>>> {
     }
   }
 
-  // Add new product and update state immediately
   void addProduct(Product newProduct) {
     final currentList = state.value ?? [];
     state = AsyncValue.data([newProduct, ...currentList]);
   }
 
-  // Update existing product
   void updateProduct(Product updatedProduct) {
     final currentList = state.value ?? [];
     final newList = currentList.map((product) {
@@ -44,7 +40,6 @@ class ProductListNotifier extends StateNotifier<AsyncValue<List<Product>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Remove product
   void removeProduct(String productId) {
     final currentList = state.value ?? [];
     final newList = currentList
@@ -54,12 +49,10 @@ class ProductListNotifier extends StateNotifier<AsyncValue<List<Product>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Refresh the list from Firebase
   Future<void> refresh() async {
     await _loadProducts();
   }
 
-  // Search products
   void searchProducts(String query) {
     if (query.isEmpty) {
       _loadProducts();

@@ -1,4 +1,3 @@
-// lib/utils/printer_util.dart
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,7 +76,6 @@ class PrinterUtil {
 
     await PdfService.openPdf(pdfFile);
   }
-  // lib/utils/printer_util.dart
 
   static Future<void> printCartOrder({
     required List<Map<String, dynamic>> items,
@@ -90,7 +88,6 @@ class PrinterUtil {
     required String paymentMethod,
   }) async {
     try {
-      // Direct call to thermal printer service (no ref needed in dialogs)
       await ThermalPrinterService.printReceipt(
         items: items,
         subtotal: subtotal,

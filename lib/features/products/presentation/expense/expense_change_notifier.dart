@@ -1,8 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:pos_ai_sales/core/firebase/firebase_expenses_service.dart';
-// import 'package:pos_ai_sales/core/db/Expense/sqlite_service_riverpod.dart';
 import 'package:pos_ai_sales/core/models/expense.dart';
 
 class ExpenseListNotifier extends StateNotifier<AsyncValue<List<Expense>>> {
@@ -16,7 +14,6 @@ class ExpenseListNotifier extends StateNotifier<AsyncValue<List<Expense>>> {
     state = const AsyncValue.loading();
     try {
       List<Expense> firebaseList = [];
-      // List<Expense> localList = [];
 
       final firebaseService = ref.read(firebaseExpensesServiceProvider);
       firebaseList = await firebaseService.getExpenses();
@@ -26,13 +23,11 @@ class ExpenseListNotifier extends StateNotifier<AsyncValue<List<Expense>>> {
     }
   }
 
-  // Add new Expense and update state immediately
   void addExpense(Expense newExpense) {
     final currentList = state.value ?? [];
     state = AsyncValue.data([newExpense, ...currentList]);
   }
 
-  // Update existing Expense
   void updateExpense(Expense updatedExpense) {
     final currentList = state.value ?? [];
     final newList = currentList.map((Expense) {
@@ -44,7 +39,6 @@ class ExpenseListNotifier extends StateNotifier<AsyncValue<List<Expense>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Remove Expense
   void removeExpense(String expenseId) {
     final currentList = state.value ?? [];
     final newList = currentList
@@ -54,7 +48,6 @@ class ExpenseListNotifier extends StateNotifier<AsyncValue<List<Expense>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Mark Expense as deleted (soft delete)
   void deleteExpense(String expenseId) {
     final currentList = state.value ?? [];
     final newList = currentList.map((expense) {
@@ -67,15 +60,12 @@ class ExpenseListNotifier extends StateNotifier<AsyncValue<List<Expense>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Refresh the list from sources
   Future<void> refresh() async {
     await _loadExpenses();
   }
 
-  // Search Expenses
   void searchExpenses(String query) {
     if (query.isEmpty) {
-      // If search is empty, reload original list
       _loadExpenses();
       return;
     }
@@ -85,9 +75,7 @@ class ExpenseListNotifier extends StateNotifier<AsyncValue<List<Expense>>> {
       return expense.name
           .toString()
           .toLowerCase()
-          .contains(query.toLowerCase()); //  ||
-      // Expense.phone?.toLowerCase().contains(query.toLowerCase()) == true ||
-      // Expense.email?.toLowerCase().contains(query.toLowerCase()) == true;
+          .contains(query.toLowerCase());
     }).toList();
 
     state = AsyncValue.data(filteredList);

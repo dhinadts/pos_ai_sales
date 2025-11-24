@@ -1,4 +1,3 @@
-// features/orders/presentation/order_details_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,9 +21,8 @@ class OrderDetailsScreen extends ConsumerWidget {
 
     return WillPopScope(
       onWillPop: () async {
-        // Handle back button press
         context.go('/home');
-        return true; // Return false to prevent back navigation
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -40,7 +38,6 @@ class OrderDetailsScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Order Summary
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -61,10 +58,7 @@ class OrderDetailsScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-
               SizedBox(height: 20),
-
-              // Items List
               Text('Items Ordered',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Expanded(
@@ -85,8 +79,6 @@ class OrderDetailsScreen extends ConsumerWidget {
                   },
                 ),
               ),
-
-              // Total Section
               Card(
                 color: Colors.cyan[50],
                 child: Padding(

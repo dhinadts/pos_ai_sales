@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 import 'sales_record.dart';
 
 class SalesAggregator {
-  // sum by day -> Map<Date, total>
   static Map<String, double> sumByDay(List<SalesRecord> data) {
     final fmt = DateFormat('yyyy-MM-dd');
     final map = <String, double>{};
@@ -13,7 +12,6 @@ class SalesAggregator {
     return map;
   }
 
-  // week number of year
   static Map<String, double> sumByWeek(List<SalesRecord> data) {
     final fmt = DateFormat('yyyy');
     final map = <String, double>{};
@@ -59,19 +57,4 @@ class SalesAggregator {
     }
     return map;
   }
-
-  /* static Map<String, double> aggregate(List<SalesRecord> data, ReportRange range) {
-    switch (range) {
-      case ReportRange.daily:
-        return sumByDay(data);
-      case ReportRange.weekly:
-        return sumByWeek(data);
-      case ReportRange.monthly:
-        return sumByMonth(data);
-      case ReportRange.quarterly:
-        return sumByQuarter(data);
-      case ReportRange.yearly:
-        return sumByYear(data);
-    }
-  } */
 }

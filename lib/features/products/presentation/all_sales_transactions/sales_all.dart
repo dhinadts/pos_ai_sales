@@ -21,14 +21,14 @@ class _SalesAllState extends ConsumerState<SalesAll> {
       } else {
         filteredTransactions = sampleTransactions.where((transaction) {
           return transaction.customerName.toLowerCase().contains(
-                query.toLowerCase(),
-              ) ||
+                    query.toLowerCase(),
+                  ) ||
               transaction.transactionCode.toLowerCase().contains(
-                query.toLowerCase(),
-              ) ||
+                    query.toLowerCase(),
+                  ) ||
               transaction.paymentMethod.toLowerCase().contains(
-                query.toLowerCase(),
-              );
+                    query.toLowerCase(),
+                  );
         }).toList();
       }
     });
@@ -115,9 +115,7 @@ class _SalesAllState extends ConsumerState<SalesAll> {
                     DropdownMenuEntry(value: 4, label: "Last Year"),
                     DropdownMenuEntry(value: 5, label: 'Custom Date'),
                   ],
-                  onSelected: (value) {
-                    // Implement date filtering logic here
-                  },
+                  onSelected: (value) {},
                 ),
               ],
             ),

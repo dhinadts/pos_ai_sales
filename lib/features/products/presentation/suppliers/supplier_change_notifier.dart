@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:pos_ai_sales/core/db/suppliers/sqflite_riverpod_suppliers.dart';
-// import 'package:pos_ai_sales/core/db/Supplier/sqlite_service_riverpod.dart';
 import 'package:pos_ai_sales/core/models/supplier.dart';
 
 class SupplierListNotifier extends StateNotifier<AsyncValue<List<Supplier>>> {
@@ -19,19 +18,14 @@ class SupplierListNotifier extends StateNotifier<AsyncValue<List<Supplier>>> {
       List<Supplier> localList = [];
 
       if (kIsWeb) {
-        // For web, only use Firebase
         final firebaseService = ref.read(firebaseSuppliersServiceProvider);
         firebaseList = await firebaseService.getSuppliers();
       } else {
-        // For mobile, fetch from both SQLite and Firebase
-        // final localService = ref.read(SupplierRepoProvider);
         final firebaseService = ref.read(firebaseSuppliersServiceProvider);
 
-        // localList = await localService.all();
         firebaseList = await firebaseService.getSuppliers();
       }
 
-      // Merge without duplicates (using supplierId)
       final mergedMap = <String, Supplier>{};
 
       for (final supplier in localList) {
@@ -44,7 +38,6 @@ class SupplierListNotifier extends StateNotifier<AsyncValue<List<Supplier>>> {
 
       final mergedList = mergedMap.values.toList();
 
-      // Sort by name (optional)
       mergedList.sort((a, b) => a.name.compareTo(b.name));
 
       state = AsyncValue.data(mergedList);
@@ -53,13 +46,11 @@ class SupplierListNotifier extends StateNotifier<AsyncValue<List<Supplier>>> {
     }
   }
 
-  // Add new Supplier and update state immediately
   void addSupplier(Supplier newSupplier) {
     final currentList = state.value ?? [];
     state = AsyncValue.data([newSupplier, ...currentList]);
   }
 
-  // Update existing Supplier
   void updateSupplier(Supplier updatedSupplier) {
     final currentList = state.value ?? [];
     final newList = currentList.map((supplier) {
@@ -71,7 +62,6 @@ class SupplierListNotifier extends StateNotifier<AsyncValue<List<Supplier>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Remove Supplier
   void removeSupplier(String supplierId) {
     final currentList = state.value ?? [];
     final newList = currentList
@@ -81,7 +71,6 @@ class SupplierListNotifier extends StateNotifier<AsyncValue<List<Supplier>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Mark Supplier as deleted (soft delete)
   void deleteSupplier(String supplierId) {
     final currentList = state.value ?? [];
     final newList = currentList.map((supplier) {
@@ -94,15 +83,12 @@ class SupplierListNotifier extends StateNotifier<AsyncValue<List<Supplier>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Refresh the list from sources
   Future<void> refresh() async {
     await _loadSuppliers();
   }
 
-  // Search Suppliers
   void searchSuppliers(String query) {
     if (query.isEmpty) {
-      // If search is empty, reload original list
       _loadSuppliers();
       return;
     }

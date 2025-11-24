@@ -1,4 +1,3 @@
-// lib/models/product_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -38,7 +37,7 @@ class Product {
 
   Map<String, dynamic> toMap() {
     return {
-      'productId': productId.toString(), // FIX ✔
+      'productId': productId.toString(),
       'name': name,
       'code': code,
       'category': category,
@@ -50,14 +49,14 @@ class Product {
       'weightUnit': weightUnit,
       'supplier': supplier,
       'imagePath': imagePath,
-      'lastModified': lastModified?.millisecondsSinceEpoch, // store int ✔
+      'lastModified': lastModified?.millisecondsSinceEpoch,
       'deleted': deleted,
     };
   }
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
-      productId: UuidValue(map['productId']), // FIX ✔
+      productId: UuidValue(map['productId']),
       name: map['name'] ?? '',
       code: map['code'] ?? '',
       category: map['category'] ?? '',
@@ -76,7 +75,6 @@ class Product {
     );
   }
 
-  // sqlite map
   Map<String, dynamic> toSqliteMap() {
     return {
       "productId": productId.toString(),
@@ -125,7 +123,6 @@ class Product {
     );
   }
 
-  /// Helper: formatted date string (for UI)
   String get formattedDate {
     if (lastModified == null) return "N/A";
     return DateFormat('dd-MM-yyyy').format(lastModified!);
@@ -172,7 +169,6 @@ class Product {
     );
   }
 
-  // CopyWith method
   Product copyWith({
     UuidValue? productId,
     String? name,
@@ -206,24 +202,4 @@ class Product {
       deleted: deleted ?? this.deleted,
     );
   }
-
-  /*  Map<String, dynamic> toFirebaseMap() {
-    return {
-      "productId": productId.toString(),
-      "name": name,
-      "code": code,
-      "category": category,
-      "description": description,
-      "buyPrice": buyPrice,
-      "sellPrice": sellPrice,
-      "stock": stock,
-      "weight": weight,
-      "weightUnit": weightUnit,
-      "supplier": supplier,
-      "imagePath": imagePath,
-      "lastModified": FieldValue.serverTimestamp(), // FIX: Use server timestamp
-      "deleted": deleted,
-    };
-  }
- */
 }

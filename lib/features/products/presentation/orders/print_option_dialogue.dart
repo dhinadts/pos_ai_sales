@@ -1,4 +1,3 @@
-// lib/components/printer_setup_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pos_ai_sales/features/products/presentation/orders/printer_utility.dart';
@@ -130,7 +129,6 @@ class PrintOptionsDialog extends ConsumerWidget {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        // Thermal Print Button
         ElevatedButton.icon(
           onPressed: () async {
             Navigator.pop(context);
@@ -139,7 +137,6 @@ class PrintOptionsDialog extends ConsumerWidget {
           icon: const Icon(Icons.print),
           label: const Text('Print Thermal'),
         ),
-        // PDF Download Button
         ElevatedButton.icon(
           onPressed: () async {
             Navigator.pop(context);
@@ -148,7 +145,6 @@ class PrintOptionsDialog extends ConsumerWidget {
           icon: const Icon(Icons.download),
           label: const Text('Download PDF'),
         ),
-        // Both Button
         ElevatedButton.icon(
           onPressed: () async {
             Navigator.pop(context);
@@ -217,7 +213,6 @@ class PrintOptionsDialog extends ConsumerWidget {
 
   Future<void> _printBothReceipts(BuildContext context) async {
     try {
-      // Print thermal first
       await PrinterUtil.printCartOrder(
         items: items,
         subtotal: subtotal,
@@ -229,7 +224,6 @@ class PrintOptionsDialog extends ConsumerWidget {
         paymentMethod: paymentMethod,
       );
 
-      // Then download PDF
       await PrinterUtil.downloadAndOpenPdf(
         items: items,
         subtotal: subtotal,

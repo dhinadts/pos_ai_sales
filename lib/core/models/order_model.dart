@@ -25,15 +25,12 @@ class OrderModel {
     required this.orderStatus,
   });
 
-  // ---------------------------
-  // Convert to Map for SQLite
-  // ---------------------------
   Map<String, dynamic> toMap() {
     return {
       "orderId": orderId,
       "customerId": customerId,
       "customerName": customerName,
-      "items": items.map((e) => e.toMap()).toList(), // Store JSON
+      "items": items.map((e) => e.toMap()).toList(),
       "subTotal": subTotal,
       "tax": tax,
       "discount": discount,
@@ -44,9 +41,6 @@ class OrderModel {
     };
   }
 
-  // ---------------------------
-  // Convert from SQLite Map
-  // ---------------------------
   factory OrderModel.fromMap(Map<String, dynamic> map) {
     return OrderModel(
       orderId: map["orderId"],
@@ -65,9 +59,6 @@ class OrderModel {
     );
   }
 
-  // ---------------------------
-  // Convert to Firebase (Firestore)
-  // ---------------------------
   Map<String, dynamic> toFirebase() {
     return {
       "orderId": orderId,
@@ -84,9 +75,6 @@ class OrderModel {
     };
   }
 
-  // ---------------------------
-  // Convert from Firebase
-  // ---------------------------
   factory OrderModel.fromFirebase(Map<String, dynamic> map) {
     return OrderModel(
       orderId: map["orderId"],

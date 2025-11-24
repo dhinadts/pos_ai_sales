@@ -23,7 +23,6 @@ class Expense {
     this.deleted = 0,
   });
 
-  // CopyWith method
   Expense copyWith({
     UuidValue? expenseId,
     String? name,
@@ -46,8 +45,6 @@ class Expense {
     );
   }
 
-  // ... rest of your existing methods (toMap, fromMap, etc.)
-
   Map<String, dynamic> toMap() {
     return {
       'expenseId': expenseId.toString(),
@@ -63,8 +60,7 @@ class Expense {
 
   factory Expense.fromMap(Map<String, dynamic> map) {
     return Expense(
-      expenseId:
-          UuidValue(map['expenseId']), // FIX: Convert string to UuidValue
+      expenseId: UuidValue(map['expenseId']),
       name: map['name'],
       note: map['note'],
       amount: map['amount'],
@@ -77,7 +73,6 @@ class Expense {
     );
   }
 
-  // sqlite map
   Map<String, dynamic> toSqliteMap() {
     return {
       'expenseId': expenseId.toString(),
@@ -114,22 +109,20 @@ class Expense {
     );
   }
 
-  /// Helper: formatted date string (for UI)
   String get formattedDate {
     if (lastModified == null) return "N/A";
     return DateFormat('dd-MM-yyyy').format(lastModified!);
   }
 
-  // Fix for Firebase methods
   Map<String, dynamic> toFirebaseMap() {
     return {
       "expenseId": expenseId.toString(),
       "name": name ?? '',
       "amount": amount ?? 0.0,
       "note": note ?? '',
-      "date": date ?? '', // FIX: Removed incorrect Timestamp conversion
+      "date": date ?? '',
       "time": time ?? '',
-      "lastModified": FieldValue.serverTimestamp(), // FIX: Use server timestamp
+      "lastModified": FieldValue.serverTimestamp(),
       "deleted": deleted,
     };
   }

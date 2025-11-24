@@ -8,18 +8,13 @@ class CartNotifier extends StateNotifier<Map<String, CartItem>> {
 
   void addToCart(CartItem item) {
     if (state.containsKey(item.id)) {
-      // If item exists, increase quantity by 1
       final existingItem = state[item.id]!;
       state = {
         ...state,
         item.id: existingItem.copyWith(quantity: existingItem.quantity + 1)
       };
     } else {
-      // If new item, add with quantity 1
-      state = {
-        ...state,
-        item.id: item.copyWith(quantity: 1) // Make sure quantity starts at 1
-      };
+      state = {...state, item.id: item.copyWith(quantity: 1)};
     }
   }
 
@@ -63,7 +58,6 @@ class CartNotifier extends StateNotifier<Map<String, CartItem>> {
   }
 }
 
-// Riverpod Provider
 final cartProvider = StateNotifierProvider<CartNotifier, Map<String, CartItem>>(
   (ref) => CartNotifier(),
 );

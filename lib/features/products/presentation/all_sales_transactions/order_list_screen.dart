@@ -1,4 +1,3 @@
-// features/orders/presentation/orders_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -13,9 +12,8 @@ class OrdersListScreen extends ConsumerWidget {
 
     return WillPopScope(
       onWillPop: () async {
-        // Handle back button press
         context.go('/home');
-        return false; // Return false to prevent back navigation
+        return false;
       },
       child: Scaffold(
         appBar: AppBar(

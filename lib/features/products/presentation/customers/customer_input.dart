@@ -84,7 +84,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
 
   Future<void> _performDelete(Customer customer) async {
     try {
-      // Show loading
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -99,28 +98,23 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
       );
 
       if (kIsWeb) {
-        // Delete from Firebase
         await ref
             .read(firebaseCustomersServiceProvider)
             .deleteCustomer(customer.customerId.toString());
       } else {
-        // Delete from SQLite (soft delete)
         await ref
             .read(customerRepoProvider)
             .softDelete(customer.customerId.toString());
 
-        // Also delete from Firebase for sync
         try {
           await ref
               .read(firebaseCustomersServiceProvider)
               .deleteCustomer(customer.customerId.toString());
         } catch (e) {
           print('Firebase delete failed: $e');
-          // Continue with local delete
         }
       }
 
-      // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -130,7 +124,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
           ),
         );
 
-        // Refresh the customer list
         ref.invalidate(customerListProvider);
 
         context.go('/customers');
@@ -154,7 +147,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
     debugPrint('🔑 Customer ID: "${widget.customerId}"');
     debugPrint('🔑 Mode: "${widget.mode}"');
 
-    // Handle new customer case
     if (widget.customerId == 'new' || widget.mode == 'add') {
       debugPrint('🆕 Creating new customer - clearing form');
       if (mounted) {
@@ -209,11 +201,9 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
     debugPrint('=== DEBUG: _loadCustomer() completed ===');
   }
 
-
   Future<void> _save() async {
     final firebase = ref.read(firebaseCustomersServiceProvider);
 
-    // Validate required fields
     if (nameCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Customer name is required')),
@@ -221,7 +211,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
       return;
     }
 
-    // Generate ID only for new customer
     final id = (widget.mode == "edit") ? widget.customerId : Uuid().v4();
 
     final customer = Customer(
@@ -240,7 +229,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
       debugPrint('   - ID: $id');
       debugPrint('   - Name: ${customer.name}');
 
-      // Use Firebase for both web and mobile
       if (widget.mode == "edit") {
         await firebase.updateCustomer(customer);
         debugPrint('✅ Customer updated in Firebase');
@@ -249,10 +237,8 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
         debugPrint('✅ Customer added to Firebase');
       }
 
-      // Refresh Customer List UI
       ref.invalidate(customerListProvider);
 
-      // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -264,7 +250,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
         );
       }
 
-      // Navigate back
       if (mounted) {
         context.go('/customers');
       }
@@ -290,8 +275,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
     }
     return WillPopScope(
       onWillPop: () async {
-        // Handle the back button press
-        // context.pop();
         context.go('/customers');
         return false;
       },
@@ -303,7 +286,6 @@ class _EditCustomerScreen extends ConsumerState<EditCustomerScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => context.go('/customers'),
-            // FIX: go_router pop
           ),
           title: Text(
             widget.mode == "edit" ? "Edit Customer" : "Add Customer",

@@ -25,7 +25,6 @@ class ProductCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // IMAGE
             Container(
               height: 60,
               width: double.infinity,
@@ -46,25 +45,17 @@ class ProductCard extends ConsumerWidget {
                     )
                   : const Icon(Icons.image, size: 60, color: Colors.grey),
             ),
-
             const SizedBox(height: 6),
-
-            // NAME
             Text(
               product["name"],
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-
-            // UNIT
             Text(
               product["unit"] ?? "",
               style: const TextStyle(color: Colors.grey),
             ),
-
             const SizedBox(height: 6),
-
-            // PRICE
             Text(
               "₹${product["price"]}",
               style: const TextStyle(
@@ -72,10 +63,7 @@ class ProductCard extends ConsumerWidget {
                   color: Colors.cyan,
                   fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 6),
-
-            // ADD OR QTY CONTROLLER
             Expanded(
               child: SizedBox(
                 height: 30,

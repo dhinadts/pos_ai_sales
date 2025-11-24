@@ -1,14 +1,10 @@
 import 'dart:typed_data';
-// dart:io is NOT used in Flutter web
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pos_ai_sales/features/products/domain/sales_record.dart';
-// path_provider is NOT used in Flutter web
 import 'package:printing/printing.dart';
-// Assuming this is your domain model, adjust the path as necessary:
-// import 'package:pos_ai_sales/features/products/domain/sales_record.dart';
 
 class ReportPdfServiceWeb {
   static Future<void> generateSalesReport(
@@ -19,7 +15,6 @@ class ReportPdfServiceWeb {
     final dateFormat = DateFormat('dd-MM-yyyy');
     final now = DateTime.now();
 
-    // Calculate total
     double totalAmount = sales.fold(0, (sum, record) => sum + record.total);
 
     pdf.addPage(
@@ -96,22 +91,13 @@ class ReportPdfServiceWeb {
       ),
     );
 
-    // *** CHANGES FOR WEB: ***
-
-    // 1. Get the PDF bytes
     final Uint8List pdfBytes = await pdf.save();
 
-    // 2. Instead of saving to a local file path (which is not possible on web),
-    // we immediately trigger the print dialog using the bytes.
     await _printPdfDirectly(pdfBytes);
 
-    // The browser handles the download/save functionality via its print dialog.
     debugPrint("✅ PDF generation complete. Triggered browser print dialog.");
   }
 
-  // Modified function:
-  // We don't use 'sharePdf' on web typically as it just triggers a save/share dialog.
-  // We use 'layoutPdf' to force the print preview immediately.
   static Future<void> _printPdfDirectly(Uint8List pdfBytes) async {
     try {
       await Printing.layoutPdf(

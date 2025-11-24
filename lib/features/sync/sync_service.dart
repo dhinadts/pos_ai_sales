@@ -2,8 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pos_ai_sales/core/db/pos_db_service.dart';
-import 'package:pos_ai_sales/core/firebase/firebase_service.dart'; // Ensure this points to your FirebaseService class
-
+import 'package:pos_ai_sales/core/firebase/firebase_service.dart'; 
 class SyncService {
   final Ref ref;
 

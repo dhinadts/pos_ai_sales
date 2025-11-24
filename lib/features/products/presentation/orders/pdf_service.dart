@@ -1,4 +1,3 @@
-// lib/services/pdf_service.dart
 import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -28,23 +27,14 @@ class PdfService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              // Header
               _buildHeader(storeName, storeAddress, storePhone),
               pw.SizedBox(height: 10),
-
-              // Order Info
               _buildOrderInfo(customer, orderType, paymentMethod),
               pw.SizedBox(height: 10),
-
-              // Items
               _buildItemsTable(items),
               pw.SizedBox(height: 10),
-
-              // Totals
               _buildTotals(subtotal, tax, discount, finalTotal),
               pw.SizedBox(height: 15),
-
-              // Footer
               _buildFooter(),
             ],
           );
@@ -123,7 +113,6 @@ class PdfService {
         3: const pw.FlexColumnWidth(2),
       },
       children: [
-        // Table Header
         pw.TableRow(
           children: [
             pw.Padding(
@@ -163,7 +152,6 @@ class PdfService {
             ),
           ],
         ),
-        // Table Rows
         ...items.map((item) {
           final name = item['name'] ?? 'Unknown';
           final quantity = item['quantity'] ?? 1;

@@ -4,7 +4,6 @@ import 'package:pos_ai_sales/core/db/expence/expence_service_riverpod.dart';
 import 'package:pos_ai_sales/core/firebase/firebase_expenses_service.dart';
 import 'package:pos_ai_sales/core/models/expense.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/text_box.dart';
-import 'package:pos_ai_sales/features/products/presentation/expense/expense_change_notifier.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,11 +23,11 @@ class EditExpenseScreen extends ConsumerStatefulWidget {
 class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late TextEditingController nameCtrl; //  "Employee Salary");
-  late TextEditingController noteCtrl; //  "Salary");
-  late TextEditingController amountCtrl; //  "10000");
-  late TextEditingController dateCtrl; //  "2020-03-27");
-  late TextEditingController timeCtrl; //  "11:30 PM");
+  late TextEditingController nameCtrl;
+  late TextEditingController noteCtrl;
+  late TextEditingController amountCtrl;
+  late TextEditingController dateCtrl;
+  late TextEditingController timeCtrl;
 
   @override
   void initState() {
@@ -68,7 +67,6 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
       amount: double.tryParse(amountCtrl.text) ?? 0.0,
       date: dateCtrl.text,
       time: timeCtrl.text,
-      // imagePath: null,
       lastModified: DateTime.now(),
     );
 
@@ -78,7 +76,7 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
       await repo.addExpense(data);
     }
 
-    ref.invalidate(ExpenseListProvider); // refresh list screen
+    ref.invalidate(ExpenseListProvider);
     context.go('/expenses');
   }
 
@@ -86,7 +84,7 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        context.go('/expenses'); // go to home
+        context.go('/expenses');
         return false;
       },
       child: Scaffold(
@@ -96,7 +94,6 @@ class _EditExpenseScreenState extends ConsumerState<EditExpenseScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => context.go('/expenses'),
-            // FIX: go_router pop
           ),
         ),
         body: SingleChildScrollView(

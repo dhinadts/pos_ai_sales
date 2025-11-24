@@ -1,10 +1,8 @@
-// lib/screens/product_details_screen.dart
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pos_ai_sales/core/db/products/sqlite_service_riverpod.dart';
 import 'package:pos_ai_sales/core/firebase/firebase_product_service.dart';
 import 'package:pos_ai_sales/core/models/product.dart';
 import 'package:pos_ai_sales/features/products/presentation/products/product_change_notifier.dart';
@@ -30,7 +28,6 @@ class ProductEditScreen extends ConsumerStatefulWidget {
 class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // controllers
   final TextEditingController _nameCtl = TextEditingController();
   final TextEditingController _codeCtl = TextEditingController();
   final TextEditingController _categoryCtl = TextEditingController();
@@ -94,7 +91,7 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
 
   InputDecoration _fieldDecoration(String label) {
     const borderRadius = 12.0;
-    const turquoise = Color(0xFF00BFEA); // adjust slightly
+    const turquoise = Color(0xFF00BFEA);
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(color: Colors.grey[700]),
@@ -130,8 +127,7 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
 
     try {
       final product = Product(
-        productId: widget.productId ??
-            const Uuid().v4obj(), // FIX: Use v4obj() for UuidValue
+        productId: widget.productId ?? const Uuid().v4obj(),
         name: _nameCtl.text.trim(),
         code: _codeCtl.text.trim(),
         category: _categoryCtl.text.trim(),
@@ -142,7 +138,7 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
         weight: double.tryParse(_weightCtl.text.trim()) ?? 0.0,
         weightUnit: _weightUnit,
         supplier: _supplier,
-        imagePath: _pickedImage?.path, // FIX: Don't use empty string if null
+        imagePath: _pickedImage?.path,
         lastModified: DateTime.now(),
       );
 
@@ -152,10 +148,8 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
         await ref.read(firebaseProductsServiceProvider).addProduct(product);
       }
 
-      // Refresh the product list
       ref.invalidate(productsListNotifierProvider);
 
-      // Navigate back
       if (context.mounted) {
         context.go('/products');
       }
@@ -196,7 +190,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
               key: _formKey,
               child: Column(
                 children: [
-                  // Product name
                   TextFormField(
                     controller: _nameCtl,
                     decoration: _fieldDecoration('Product Name'),
@@ -204,7 +197,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                         (v == null || v.trim().isEmpty) ? 'Enter name' : null,
                   ),
                   const SizedBox(height: 16),
-                  // Code + barcode placeholder (we'll show only textfield)
                   Row(
                     children: [
                       Expanded(
@@ -217,7 +209,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // barcode icon button placeholder
                       Container(
                         height: 56,
                         width: 56,
@@ -230,9 +221,7 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                             Icons.qr_code,
                             color: Colors.black54,
                           ),
-                          onPressed: () {
-                            // TODO: implement barcode scan
-                          },
+                          onPressed: () {},
                         ),
                       ),
                     ],
@@ -250,7 +239,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                     decoration: _fieldDecoration('Product Description'),
                   ),
                   const SizedBox(height: 16),
-                  // Prices and stock
                   TextFormField(
                     controller: _buyPriceCtl,
                     keyboardType: TextInputType.numberWithOptions(
@@ -281,7 +269,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                     decoration: _fieldDecoration('Product Weight'),
                   ),
                   const SizedBox(height: 12),
-                  // Weight unit dropdown
                   DropdownButtonFormField<String>(
                     value: _weightUnit,
                     items: _units
@@ -292,7 +279,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                     decoration: _fieldDecoration('Select Product Weight Unit'),
                   ),
                   const SizedBox(height: 12),
-                  // Supplier
                   DropdownButtonFormField<String>(
                     value: _supplier,
                     items: _suppliers
@@ -303,7 +289,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                     decoration: _fieldDecoration('Select Supplier'),
                   ),
                   const SizedBox(height: 20),
-                  // Choose product image button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -322,7 +307,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  // Image preview placeholder
                   Container(
                     width: double.infinity,
                     height: 220,
@@ -352,7 +336,6 @@ class _ProductEditScreen extends ConsumerState<ProductEditScreen> {
                           ),
                   ),
                   const SizedBox(height: 22),
-                  // Bottom Edit button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(

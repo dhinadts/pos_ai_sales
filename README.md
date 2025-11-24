@@ -1,4 +1,5 @@
 # 🚀 POI AI Sales Insight  
+
 A Modern, Multi-Platform POS System with AI-Driven Business Insights
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.x-blue?logo=flutter&style=for-the-badge)
@@ -9,6 +10,7 @@ A Modern, Multi-Platform POS System with AI-Driven Business Insights
 ---
 
 ## 📄 **Overview**
+
 **POI AI Sales Insight** is a modern, AI-assisted Point-of-Sale application built using **Flutter**.  
 It integrates real-time sales tracking, inventory monitoring, customer management, and AI-powered insights to help businesses make smarter decisions.
 
@@ -19,43 +21,51 @@ Designed for **Android**, **Web**, and **Desktop**, the app offers a unified POS
 ## ✨ **Key Features**
 
 ### 🛒 **1. POS Billing System**
+
 - Fast and intuitive billing UI  
 - Add/remove items, quantity update, discounts  
 - Automatic tax + total calculation  
 - Multi-device responsive layout  
 
 ### 📊 **2. Sales Analytics & Reports**
+
 - Daily/Weekly/Monthly Sales Graphs using **FL Chart**  
 - Top selling products  
 - Gross revenue / profit tracking  
 - Export reports  
 
 ### 🧾 **3. Thermal Printer Support**
+
 - 58mm / 80mm thermal printer  
 - Bluetooth / USB / Network Printer  
 - Print invoices, receipts, and reports  
 
 ### 👨‍💼 **4. Customer Management**
+
 - Add & manage customers  
 - Track purchase history  
 - Customer credit / balance tracking  
 
 ### 📦 **5. Product & Inventory Management**
+
 - Add / update products  
 - Real-time stock tracking  
 - Barcode support  
 - Image upload with Firebase Storage  
 
 ### ☁️ **6. Cloud Sync with Firebase**
+
 - Real-time sync using **Firestore**  
 - Firebase Authentication  
 - Cloud Storage for product images  
 
 ### 📴 **7. Offline Mode**
+
 - App works even without internet  
 - Automatically syncs when online  
 
 ### 🖥️ **8. Multi-Platform Support**
+
 | Platform | Supported |
 |---------|-----------|
 | Android | ✔️ |
@@ -69,17 +79,20 @@ Designed for **Android**, **Web**, and **Desktop**, the app offers a unified POS
 ## 🛠️ **Tech Stack**
 
 ### **Frontend**
+
 - Flutter 3.x
 - Riverpod (State Management)
 - Go Router (Navigation)
 - Material 3 UI + Responsive Layout
 
 ### **Backend**
+
 - Firebase Authentication  
 - Cloud Firestore  
 - Firebase Storage  
 
 ### **Libraries**
+
 - FL Chart (Analytics)  
 - Printing / ESC POS  
 - Freezed / JSON Serializable  
@@ -89,6 +102,7 @@ Designed for **Android**, **Web**, and **Desktop**, the app offers a unified POS
 ---
 
 ## 📁 **Project Structure (Feature-Based Architecture)**
+
 ```
 lib/
 ├── core/
@@ -112,18 +126,20 @@ lib/
 ## 🧑‍🔧 **Installation Guide**
 
 ### 🔹 **1. Clone the Repository**
-```
-git clone https://github.com/your-repo/poi-ai-sales-insight.git
 
+```git
+git clone https://github.com/dhinadts/pos_ai_sales.git
 cd poi-ai-sales-insight
 ```
 
 ### 🔹 **2. Install Dependencies**
-```
+
+```dart
 flutter pub get
 ```
 
 ### 🔹 **3. Add Firebase Configuration**
+
 Add your Firebase files:
 
 - `google-services.json` → `android/app/`
@@ -131,12 +147,14 @@ Add your Firebase files:
 - `firebase_options.dart` using FlutterFire CLI
 
 ### 🔹 **4. Run the App**
-```
+
+```flutter
 flutter run
 ```
 
 ### 🔹 **5. Build for Web**
-```
+
+```flutter
 flutter build web
 ```
 
@@ -178,7 +196,6 @@ flutter build web
   <img src="assets/screenshots/products.jpg" width="180"/>
   <img src="assets/screenshots/suppliers.jpg" width="180"/>
   
-
 </p>
 
 <p align="center">
@@ -186,7 +203,6 @@ flutter build web
   <img src="assets/screenshots/adding-order-pos-order.jpg" width="180"/>
   <img src="assets/screenshots/product-cart.jpg" width="180"/>
   <img src="assets/screenshots/order-summary.jpg" width="180"/>
-  
   
 </p>
 <p align="center">
@@ -196,12 +212,12 @@ flutter build web
 </p>
 ---
 
-
 ---
 
 ## 🚀 **Roadmap**
 
 ### 👍 Completed
+
 - POS Billing System  
 - Firebase Cloud Sync  
 - Thermal Printing  
@@ -209,6 +225,7 @@ flutter build web
 - Sales Analytics  
 
 ### 🔜 Upcoming
+
 - AI-powered product recommendation  
 - GPT-based sales forecasting  
 - Multi-language support  
@@ -224,7 +241,9 @@ This project is licensed under the **MIT License**.
 ---
 
 ## 🏢 **Developed By**
+
 ### **DHINAKARAN K*  
+
 ✔️ Web & Mobile Application Development  
 ✔️ AI Solutions for Enterprises  
 ✔️ POS & ERP Solutions  
@@ -234,8 +253,7 @@ This project is licensed under the **MIT License**.
 ## 💬 **Support**
 
 For queries or custom development:  
-📧 **dhinadts@gmail.com**    
+📧 **<dhinadts@gmail.com>**
 📱 +91 96770 96359  
 
 ---
-

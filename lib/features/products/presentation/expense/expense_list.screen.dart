@@ -13,7 +13,6 @@ class ExpensesList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final expenseAsync = ref.watch(expenseListNotifierProvider);
-    // final isWeb = MediaQuery.of(context).size.width > 600;
     final responsive = ref.watch(responsiveProvider);
 
     return WillPopScope(
@@ -37,7 +36,6 @@ class ExpensesList extends ConsumerWidget {
           ),
         ),
         body: LayoutBuilder(builder: (context, constraints) {
-          // Update responsive values
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ref.read(responsiveProvider.notifier).updateFromContext(context);
           });
@@ -114,7 +112,6 @@ class ExpensesList extends ConsumerWidget {
                             );
                           }
 
-                          // 🌐 Grid for Web
                           if (responsive.isDesktop) {
                             final crossAxisCount = responsive
                                 .getCrossAxisCount(constraints.maxWidth);
@@ -123,7 +120,7 @@ class ExpensesList extends ConsumerWidget {
                                 top: responsive.height(10),
                                 bottom: responsive.height(
                                   80,
-                                ), // Space for FAB
+                                ),
                               ),
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
@@ -151,7 +148,6 @@ class ExpensesList extends ConsumerWidget {
                             );
                           }
 
-                          // 📱 List for Mobile
                           return ListView.builder(
                             padding: EdgeInsets.only(
                               top: responsive.height(10),

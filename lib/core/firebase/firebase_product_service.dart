@@ -4,30 +4,20 @@ import 'package:pos_ai_sales/core/models/product.dart';
 
 class FirebaseProductsService {
   final _db = FirebaseFirestore.instance;
-  final String _collectionName = 'products'; // Changed to lowercase
-
-  /* Future<void> addProduct(Product product) async {
-    await _db
-        .collection(_collectionName)
-        .doc(product.productId.toString())
-        .set(product.toFirebaseMap());
-  } */
+  final String _collectionName = 'products';
 
   Future<List<Product>> getProducts() async {
     final snapshot = await _db
         .collection(_collectionName)
         .where("deleted", isEqualTo: 0)
-        // .orderBy("name")
         .get();
 
     return snapshot.docs.map((doc) {
-      // Use fromFirebaseMap for Firestore data
       return Product.fromFirebaseMap(doc.data());
     }).toList();
   }
 
   Future<void> addProduct(Product product) async {
-    // Use toFirebaseMap for Firestore data
     await _db
         .collection(_collectionName)
         .doc(product.productId.toString())
@@ -35,7 +25,6 @@ class FirebaseProductsService {
   }
 
   Future<void> updateProduct(Product product) async {
-    // Use toFirebaseMap for Firestore data
     await _db
         .collection(_collectionName)
         .doc(product.productId.toString())
@@ -50,7 +39,6 @@ class FirebaseProductsService {
     return null;
   }
 
-  /// Soft delete support
   Future<void> deleteProduct(String customerId) async {
     await _db.collection(_collectionName).doc(customerId).update({
       "deleted": 1,

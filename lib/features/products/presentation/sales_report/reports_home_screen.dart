@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:csv/csv.dart';
-import 'package:esc_pos_printer_plus/esc_pos_printer_plus.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -9,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:pos_ai_sales/features/products/domain/sales_record.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/pdf_web_service.dart';
-import 'package:pos_ai_sales/features/products/presentation/sales_report/printer/thermal_printer_service.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/report_chart_widget.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/report_pdf_service.dart';
 
@@ -35,7 +33,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
   }
 
   void _initializeProductCatalog() {
-    // Sample product catalog data
     _productCatalog.addAll([
       {
         'Barcode': '8901234567890',
@@ -212,7 +209,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Product Information Section
               _buildSectionHeader('Product Information'),
               _buildDetailRow('Barcode', sale.code),
               _buildDetailRow(
@@ -224,8 +220,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
               _buildDetailRow('Category', sale.category ?? 'General'),
               _buildDetailRow('Brand', sale.brand ?? 'Unknown'),
               _buildDetailRow('Unit', sale.unit ?? 'Pieces'),
-
-              // Pricing Information Section
               _buildSectionHeader('Pricing Information'),
               _buildDetailRow('Tax Rate', sale.tax ?? '0%'),
               _buildDetailRow('Cost Price', _formatCurrency(sale.cost)),
@@ -234,58 +228,43 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                 _formatCurrency(sale.mrp ?? sale.unitPrice),
               ),
               _buildDetailRow('Sale Price', _formatCurrency(sale.unitPrice)),
-
-              // Language Descriptions
               if (sale.tamilDescription != null &&
                   sale.tamilDescription!.isNotEmpty)
                 _buildDetailRow('Tamil Description', sale.tamilDescription!),
-
               if (sale.hindiDescription != null &&
                   sale.hindiDescription!.isNotEmpty)
                 _buildDetailRow('Hindi Description', sale.hindiDescription!),
-
               if (sale.teluguDescription != null &&
                   sale.teluguDescription!.isNotEmpty)
                 _buildDetailRow('Telugu Description', sale.teluguDescription!),
-
               if (sale.kannadaDescription != null &&
                   sale.kannadaDescription!.isNotEmpty)
                 _buildDetailRow(
                   'Kannada Description',
                   sale.kannadaDescription!,
                 ),
-
               if (sale.malayalamDescription != null &&
                   sale.malayalamDescription!.isNotEmpty)
                 _buildDetailRow(
                   'Malayalam Description',
                   sale.malayalamDescription!,
                 ),
-
-              // Additional Fields
               if (sale.hsnCode != null && sale.hsnCode!.isNotEmpty)
                 _buildDetailRow('HSN Code', sale.hsnCode!),
-
               if (sale.sku != null && sale.sku!.isNotEmpty)
                 _buildDetailRow('SKU', sale.sku!),
-
               if (sale.supplier != null && sale.supplier!.isNotEmpty)
                 _buildDetailRow('Supplier', sale.supplier!),
-
               if (sale.manufacturer != null && sale.manufacturer!.isNotEmpty)
                 _buildDetailRow('Manufacturer', sale.manufacturer!),
-
               if (sale.expiryDate != null)
                 _buildDetailRow(
                   'Expiry Date',
                   sale.expiryDate!,
                   isWarning: sale.isExpired,
                 ),
-
               if (sale.batchNumber != null && sale.batchNumber!.isNotEmpty)
                 _buildDetailRow('Batch Number', sale.batchNumber!),
-
-              // Sales Information Section
               _buildSectionHeader('Sales Information'),
               _buildDetailRow('Quantity Sold', sale.qty.toString()),
               _buildDetailRow('Unit Price', _formatCurrency(sale.unitPrice)),
@@ -294,8 +273,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                 'Sale Date',
                 DateFormat('dd-MM-yyyy HH:mm').format(sale.date),
               ),
-
-              // Profit Calculation
               if (sale.cost != null) _buildProfitSection(sale),
             ],
           ),
@@ -325,24 +302,7 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                           ListTile(
                             title:
                                 Text('Print via Network Thermal Printer (IP)'),
-                            onTap: () async {
-                              /*   Navigator.pop(ctx);
-
-                              final thermal = ThermalPrinterService();
-                              const printerIp =
-                                  '192.168.1.100'; // Replace with real printer IP
-
-                              final result = await thermal.printOverNetwork(
-                                  record, printerIp);
-
-                              if (result != PosPrintResult.success) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'Network print failed: $result')),
-                                );
-                              } */
-                            },
+                            onTap: () async {},
                           ),
                         ],
                       ),
@@ -358,7 +318,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
           if (sale.isExpired)
             TextButton(
               onPressed: () {
-                // Handle expired product action
                 _showExpiredProductWarning(sale);
               },
               child: const Text('EXPIRED', style: TextStyle(color: Colors.red)),
@@ -725,36 +684,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () => context.go('/home'),
           ),
-          /* actions: [
-            IconButton(
-              icon: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    )
-                  : const Icon(Icons.file_upload),
-              tooltip: "Import CSV / Excel",
-              onPressed: _isLoading ? null : _importFile,
-            ), */
-          /* IconButton(
-              icon: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    )
-                  : const Icon(Icons.picture_as_pdf),
-              tooltip: "Export & Print PDF",
-              onPressed: _isLoading ? null : _exportPdf,
-            // ), */
-          // ],
         ),
         body: _isLoading
             ? const Center(
@@ -773,7 +702,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  // Filter Section
                   Card(
                     elevation: 2,
                     child: Padding(
@@ -821,19 +749,13 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
-                  // Chart Section
                   ReportChartWidget(
                     salesData: allSales.map((e) => e.toMap()).toList(),
                     filterType: selectedRange.toLowerCase(),
                     chartType: 'multi_line',
                   ),
-
                   const SizedBox(height: 20),
-
-                  // Sales Details Section
                   Card(
                     elevation: 2,
                     child: Padding(
@@ -861,10 +783,7 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
-                  // Sales List
                   ...filteredSales.map((s) {
                     final dateStr = DateFormat('dd-MM-yyyy').format(s.date);
                     return Card(
@@ -914,7 +833,6 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
                       ),
                     );
                   }),
-
                   if (filteredSales.isEmpty) ...[
                     const SizedBox(height: 40),
                     Center(
@@ -940,458 +858,3 @@ class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
     );
   }
 }
-
-
-
-/* import 'dart:convert';
-import 'dart:io';
-import 'package:csv/csv.dart';
-import 'package:excel/excel.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:pos_ai_sales/features/products/domain/sales_record.dart';
-import 'package:pos_ai_sales/features/products/presentation/sales_report/report_chart_widget.dart';
-import 'package:pos_ai_sales/features/products/presentation/sales_report/report_pdf_service.dart';
-
-class ReportsHomeScreen extends StatefulWidget {
-  const ReportsHomeScreen({super.key});
-
-  @override
-  State<ReportsHomeScreen> createState() => _ReportsHomeScreenState();
-}
-
-class _ReportsHomeScreenState extends State<ReportsHomeScreen> {
-  List<SalesRecord> allSales = [];
-  List<SalesRecord> filteredSales = [];
-  String selectedRange = 'Daily';
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSampleSales();
-  }
-
-  void _loadSampleSales() {
-    final now = DateTime.now();
-    setState(() {
-      _isLoading = true;
-    });
-
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      allSales = [
-        SalesRecord(
-          date: now.subtract(const Duration(days: 4)),
-          total: 2400.50,
-          productName: "Product A",
-          code: 'A001',
-          qty: 2,
-          unitPrice: 1200.25,
-        ),
-        SalesRecord(
-          date: now.subtract(const Duration(days: 3)),
-          total: 1800.00,
-          productName: "Product B",
-          code: 'B002',
-          qty: 3,
-          unitPrice: 600.00,
-        ),
-        SalesRecord(
-          date: now.subtract(const Duration(days: 2)),
-          total: 2200.75,
-          productName: "Product C",
-          code: 'C003',
-          qty: 5,
-          unitPrice: 440.15,
-        ),
-        SalesRecord(
-          date: now.subtract(const Duration(days: 1)),
-          total: 2600.25,
-          productName: "Product D",
-          code: 'D004',
-          qty: 2,
-          unitPrice: 1300.12,
-        ),
-        SalesRecord(
-          date: now,
-          total: 3000.00,
-          productName: "Product E",
-          code: 'E005',
-          qty: 1,
-          unitPrice: 3000.00,
-        ),
-      ];
-      _applyFilter();
-      setState(() {
-        _isLoading = false;
-      });
-    });
-  }
-
-  void _applyFilter() {
-    DateTime now = DateTime.now();
-    setState(() {
-      filteredSales = allSales.where((s) {
-        switch (selectedRange) {
-          case 'Daily':
-            return s.date.day == now.day &&
-                s.date.month == now.month &&
-                s.date.year == now.year;
-          case 'Weekly':
-            DateTime startOfWeek = now.subtract(
-              Duration(days: now.weekday - 1),
-            );
-            DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
-            return s.date.isAfter(
-                  startOfWeek.subtract(const Duration(days: 1)),
-                ) &&
-                s.date.isBefore(endOfWeek.add(const Duration(days: 1)));
-          case 'Monthly':
-            return s.date.month == now.month && s.date.year == now.year;
-          case 'Yearly':
-            return s.date.year == now.year;
-          default:
-            return true;
-        }
-      }).toList();
-    });
-  }
-
-  Future<void> _importFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['csv', 'xlsx'],
-    );
-
-    if (result == null) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final file = File(result.files.single.path!);
-      final extension = file.path.split('.').last.toLowerCase();
-
-      List<SalesRecord> imported = [];
-      if (extension == 'csv') {
-        final content = await file.readAsString();
-        final rows = const CsvToListConverter().convert(content, eol: '\n');
-        for (int i = 1; i < rows.length; i++) {
-          imported.add(
-            SalesRecord.fromMap({
-              'date': rows[i][0].toString(),
-              'productName': rows[i][1].toString(),
-              'total': rows[i][2].toString(),
-              'qty': rows[i].length > 3 ? rows[i][3].toString() : '1',
-              'unitPrice': rows[i].length > 4 ? rows[i][4].toString() : '0',
-            }),
-          );
-        }
-      } else if (extension == 'xlsx') {
-        final bytes = await file.readAsBytes();
-        final excel = Excel.decodeBytes(bytes);
-        final sheet = excel.tables.values.first;
-        for (int i = 1; i < sheet!.rows.length; i++) {
-          final row = sheet.rows[i];
-          imported.add(
-            SalesRecord.fromMap({
-              'date': row[0]?.value.toString() ?? '',
-              'productName': row[1]?.value.toString() ?? '',
-              'total': row[2]?.value.toString() ?? '',
-              'qty': row.length > 3 ? row[3]?.value.toString() ?? '1' : '1',
-              'unitPrice': row.length > 4
-                  ? row[4]?.value.toString() ?? '0'
-                  : '0',
-            }),
-          );
-        }
-      }
-
-      setState(() {
-        allSales = imported;
-        _applyFilter();
-        _isLoading = false;
-      });
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Imported ${imported.length} sales records."),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error importing file: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  Future<void> _exportPdf() async {
-    if (filteredSales.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("No data available to export"),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      await ReportPdfService.generateSalesReport(filteredSales, selectedRange);
-
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("PDF generated successfully for $selectedRange report"),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error generating PDF: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Sales Reports"),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: _isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                    ),
-                  )
-                : const Icon(Icons.file_upload),
-            tooltip: "Import CSV / Excel",
-            onPressed: _isLoading ? null : _importFile,
-          ),
-          IconButton(
-            icon: _isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
-                    ),
-                  )
-                : const Icon(Icons.picture_as_pdf),
-            tooltip: "Export & Print PDF",
-            onPressed: _isLoading ? null : _exportPdf,
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading sales data...', style: TextStyle(fontSize: 16)),
-                ],
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                // Filter Section
-                Card(
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Report Period",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                        DropdownButton<String>(
-                          value: selectedRange,
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'Daily',
-                              child: Text('Daily'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Weekly',
-                              child: Text('Weekly'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Monthly',
-                              child: Text('Monthly'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Yearly',
-                              child: Text('Yearly'),
-                            ),
-                          ],
-                          onChanged: (val) {
-                            if (val != null) {
-                              setState(() {
-                                selectedRange = val;
-                              });
-                              _applyFilter();
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Chart Section
-                ReportChartWidget(
-                  salesData: allSales.map((e) => e.toMap()).toList(),
-                  filterType: selectedRange.toLowerCase(),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Sales Details Section
-                Card(
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Sales Details",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Total Records: ${filteredSales.length}",
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Sales List
-                ...filteredSales.map((s) {
-                  final dateStr = DateFormat('dd-MM-yyyy').format(s.date);
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    elevation: 1,
-                    child: ListTile(
-                      leading: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.shopping_cart,
-                          color: Colors.blueAccent,
-                          size: 20,
-                        ),
-                      ),
-                      title: Text(
-                        s.productName,
-                        style: const TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      subtitle: Text("Date: $dateStr • Qty: ${s.qty}"),
-                      trailing: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "₹${s.total.toStringAsFixed(2)}",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.green,
-                            ),
-                          ),
-                          Text(
-                            "₹${s.unitPrice.toStringAsFixed(2)}/unit",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-
-                if (filteredSales.isEmpty) ...[
-                  const SizedBox(height: 40),
-                  Center(
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.receipt_long,
-                          size: 64,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'No sales records found',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
-    );
-  }
-}
- */

@@ -1,9 +1,6 @@
-// Update your cart_screen.dart
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pos_ai_sales/core/models/customer.dart';
 import 'package:pos_ai_sales/core/utilits/thermal_printer/bluetooth_printer_service.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/common_button.dart';
 import 'package:pos_ai_sales/features/products/presentation/all_sales_transactions/order_repo.dart';
@@ -13,9 +10,6 @@ import 'package:pos_ai_sales/features/products/presentation/orders/printer_utili
 import 'cart_provider.dart';
 
 class CartScreen extends ConsumerWidget {
-  // const CartScreen({super.key});
-
-// Update your _processOrder method in CartScreen
   Future<void> _processOrder({
     required BuildContext context,
     required WidgetRef ref,
@@ -34,7 +28,6 @@ class CartScreen extends ConsumerWidget {
     final discountValue = double.tryParse(discount) ?? 0.0;
 
     try {
-      // Save order to database/provider
       final orderId = orderController.addOrder(
         customerName: customer,
         orderType: orderType,
@@ -46,7 +39,6 @@ class CartScreen extends ConsumerWidget {
         cartItems: items,
       );
 
-      // PRINT RECEIPT with order ID
       final printer = PrinterManager();
       await printer.printCartOrder(
         items: items,
@@ -57,17 +49,14 @@ class CartScreen extends ConsumerWidget {
         customer: customer,
         orderType: orderType,
         paymentMethod: paymentMethod,
-        orderId: orderId, // Pass order ID to receipt
+        orderId: orderId,
       );
 
-      // Clear cart
       cartController.clearCart();
 
-      // Close dialog
       if (context.mounted) {
         Navigator.of(context).pop();
 
-        // Show success message with order ID
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Order #$orderId submitted successfully!'),
@@ -76,11 +65,9 @@ class CartScreen extends ConsumerWidget {
           ),
         );
 
-        // Optionally show order details
         _showOrderConfirmation(context, orderId, ref);
       }
     } catch (e) {
-      // Handle errors
       if (context.mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -93,7 +80,6 @@ class CartScreen extends ConsumerWidget {
     }
   }
 
-// Show order confirmation with details
   void _showOrderConfirmation(
       BuildContext context, String orderId, WidgetRef ref) {
     final order = ref.read(orderProvider.notifier).getOrderById(orderId);
@@ -126,7 +112,6 @@ class CartScreen extends ConsumerWidget {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                // Navigate to order details screen
                 context.go('/order-details/$orderId');
               },
               child: Text('View Details'),
@@ -137,7 +122,6 @@ class CartScreen extends ConsumerWidget {
     }
   }
 
-// Replace your current print call with:
   void _handlePrintReceipt(
       BuildContext context,
       List<Map<String, dynamic>> items,
@@ -163,7 +147,6 @@ class CartScreen extends ConsumerWidget {
     );
   }
 
-// Or call directly for PDF only:
   void _downloadPdfOnly(
       List<Map<String, dynamic>> items,
       double subtotal,
@@ -225,76 +208,6 @@ class CartScreen extends ConsumerWidget {
       },
     );
   }
-
-  /*  Future<void> _processOrder({
-    required BuildContext context,
-    required WidgetRef ref,
-    required String customer,
-    required String orderType,
-    required String paymentMethod,
-    required String discount,
-
-  }) async {
-    final cartController = ref.read(cartProvider.notifier);
-    final items = cartController.items;
-
-    final subtotal = cartController.subtotal;
-    final tax = cartController.taxAmount;
-    final finalTotal = cartController.finalTotal;
-    final discountValue = double.tryParse(discount) ?? 0.0;
-
-    try {
-      // PRINT RECEIPT
-      final printer = PrinterManager();
-      await printer.printCartOrder(
-        items: items,
-        subtotal: subtotal,
-        tax: tax,
-        discount: discountValue,
-        finalTotal: finalTotal - discountValue,
-        customer: customer,
-        orderType: orderType,
-        paymentMethod: paymentMethod,
-      );
-
-      // Clear cart
-      cartController.clearCart();
-
-      // Close dialog
-      if (context.mounted) {
-        Navigator.of(context).pop();
-
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                'Order submitted successfully! ${kIsWeb ? 'Receipt opened in new tab.' : ''}'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Redirect after a delay
-        Future.delayed(Duration(seconds: 2), () {
-          if (context.mounted) {
-            context.go('/orders');
-          }
-        });
-      }
-    } catch (e) {
-      // Handle print errors
-      if (context.mounted) {
-        Navigator.of(context).pop();
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Printing failed: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  */
-  // }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -431,8 +344,6 @@ class CartScreen extends ConsumerWidget {
                           },
                         ),
                 ),
-
-                /// Footer Price Section
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(isTablet ? 30 : 20),
@@ -447,8 +358,6 @@ class CartScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-
-                /// Submit Button
                 Padding(
                   padding: EdgeInsets.all(isTablet ? 24 : 16),
                   child: SizedBox(

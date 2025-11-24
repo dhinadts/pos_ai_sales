@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
-/// Model that holds responsive dimension data
 class ResponsiveInfo {
   final double screenWidth;
   final double screenHeight;
@@ -17,15 +16,10 @@ class ResponsiveInfo {
     required this.isDesktop,
   });
 
-  /// Dynamic width scale based on device size
-  double width(double value) =>
-      value * (screenWidth / 375); // 375 = iPhone base width
+  double width(double value) => value * (screenWidth / 375);
 
-  /// Dynamic height scale based on device size
-  double height(double value) =>
-      value * (screenHeight / 812); // 812 = iPhone base height
+  double height(double value) => value * (screenHeight / 812);
 
-  /// Dynamic text size scaling
   double text(double fontSize) {
     if (isDesktop) return fontSize * 1.3;
     if (isTablet) return fontSize * 1.1;
@@ -46,20 +40,18 @@ class ResponsiveInfo {
   }
 }
 
-/// StateNotifier to manage and update responsive data
 class ResponsiveNotifier extends StateNotifier<ResponsiveInfo> {
   ResponsiveNotifier()
-    : super(
-        ResponsiveInfo(
-          screenWidth: 375,
-          screenHeight: 812,
-          isMobile: true,
-          isTablet: false,
-          isDesktop: false,
-        ),
-      );
+      : super(
+          ResponsiveInfo(
+            screenWidth: 375,
+            screenHeight: 812,
+            isMobile: true,
+            isTablet: false,
+            isDesktop: false,
+          ),
+        );
 
-  /// Update the state when layout changes
   void updateFromContext(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final width = size.width;
@@ -78,8 +70,7 @@ class ResponsiveNotifier extends StateNotifier<ResponsiveInfo> {
   }
 }
 
-/// Global Riverpod provider for responsive data
 final responsiveProvider =
     StateNotifierProvider<ResponsiveNotifier, ResponsiveInfo>(
-      (ref) => ResponsiveNotifier(),
-    );
+  (ref) => ResponsiveNotifier(),
+);

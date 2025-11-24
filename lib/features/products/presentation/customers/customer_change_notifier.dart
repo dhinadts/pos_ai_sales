@@ -2,8 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:pos_ai_sales/core/db/customer/sqlite_service_riverpod.dart';
-import 'package:pos_ai_sales/core/firebase/firebase_customers_service.dart'
-    hide firebaseCustomersServiceProvider;
 import 'package:pos_ai_sales/core/models/customer.dart';
 
 class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
@@ -20,19 +18,14 @@ class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
       List<Customer> localList = [];
 
       if (kIsWeb) {
-        // For web, only use Firebase
         final firebaseService = ref.read(firebaseCustomersServiceProvider);
         firebaseList = await firebaseService.getCustomers();
       } else {
-        // For mobile, fetch from both SQLite and Firebase
-        // final localService = ref.read(customerRepoProvider);
         final firebaseService = ref.read(firebaseCustomersServiceProvider);
 
-        // localList = await localService.all();
         firebaseList = await firebaseService.getCustomers();
       }
 
-      // Merge without duplicates (using customerId)
       final mergedMap = <String, Customer>{};
 
       for (final customer in localList) {
@@ -45,7 +38,6 @@ class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
 
       final mergedList = mergedMap.values.toList();
 
-      // Sort by name (optional)
       mergedList.sort((a, b) => a.name.compareTo(b.name));
 
       state = AsyncValue.data(mergedList);
@@ -54,13 +46,11 @@ class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
     }
   }
 
-  // Add new customer and update state immediately
   void addCustomer(Customer newCustomer) {
     final currentList = state.value ?? [];
     state = AsyncValue.data([newCustomer, ...currentList]);
   }
 
-  // Update existing customer
   void updateCustomer(Customer updatedCustomer) {
     final currentList = state.value ?? [];
     final newList = currentList.map((customer) {
@@ -72,7 +62,6 @@ class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Remove customer
   void removeCustomer(String customerId) {
     final currentList = state.value ?? [];
     final newList = currentList
@@ -82,7 +71,6 @@ class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Mark customer as deleted (soft delete)
   void deleteCustomer(String customerId) {
     final currentList = state.value ?? [];
     final newList = currentList.map((customer) {
@@ -95,15 +83,12 @@ class CustomerListNotifier extends StateNotifier<AsyncValue<List<Customer>>> {
     state = AsyncValue.data(newList);
   }
 
-  // Refresh the list from sources
   Future<void> refresh() async {
     await _loadCustomers();
   }
 
-  // Search customers
   void searchCustomers(String query) {
     if (query.isEmpty) {
-      // If search is empty, reload original list
       _loadCustomers();
       return;
     }

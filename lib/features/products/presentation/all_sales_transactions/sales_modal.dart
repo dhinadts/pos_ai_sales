@@ -1,7 +1,5 @@
-// Transaction Model based on your Product model structure
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
-// import 'package:uuid/uuid_value.dart';
 
 class Transaction {
   UuidValue transactionId;
@@ -48,7 +46,8 @@ class Transaction {
       transactionId: UuidValue(map['transactionId']),
       customerName: map['customerName'] ?? '',
       transactionCode: map['transactionCode'] ?? '',
-      transactionDate: DateTime.fromMillisecondsSinceEpoch(map['transactionDate']),
+      transactionDate:
+          DateTime.fromMillisecondsSinceEpoch(map['transactionDate']),
       totalAmount: (map['totalAmount'] ?? 0).toDouble(),
       itemsCount: (map['itemsCount'] ?? 0).toInt(),
       paymentMethod: map['paymentMethod'] ?? 'Cash',
@@ -58,18 +57,16 @@ class Transaction {
     );
   }
 
-  /// Helper: formatted date string (for UI)
   String get formattedDate {
     return DateFormat('dd-MM-yyyy HH:mm').format(transactionDate);
   }
 
-  /// Helper: formatted amount (for UI)
   String get formattedAmount {
-    return NumberFormat.currency(symbol: '\$', decimalDigits: 2).format(totalAmount);
+    return NumberFormat.currency(symbol: '\$', decimalDigits: 2)
+        .format(totalAmount);
   }
 }
 
-// Sample transactions data
 final List<Transaction> sampleTransactions = [
   Transaction(
     transactionId: Uuid().v4obj(),

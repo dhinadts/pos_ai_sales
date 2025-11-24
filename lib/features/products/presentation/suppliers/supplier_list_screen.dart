@@ -10,14 +10,11 @@ class SuppliersListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final suppliersAsync = ref.watch(supplierListProvider);
     final isWeb = MediaQuery.of(context).size.width > 600;
-    // final responsive = ref.watch(responsiveProvider);
-    // final customersAsync = ref.watch(customerListProvider);
     final suppliersAsync = ref.watch(supplierListNotifierProvider);
     return WillPopScope(
       onWillPop: () async {
-        context.go('/home'); // go to home
+        context.go('/home');
         return false;
       },
       child: Scaffold(
@@ -44,7 +41,6 @@ class SuppliersListScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  // 🔍 Search Bar
                   TextField(
                     decoration: InputDecoration(
                       hintText: "Search suppliers...",
@@ -69,8 +65,6 @@ class SuppliersListScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // 🧾 Customer List
                   Expanded(
                     child: suppliersAsync.when(
                       data: (suppliers) {
@@ -86,7 +80,6 @@ class SuppliersListScreen extends ConsumerWidget {
                           );
                         }
 
-                        // 💡 Grid on web, List on mobile
                         if (isWeb) {
                           return GridView.builder(
                             gridDelegate:

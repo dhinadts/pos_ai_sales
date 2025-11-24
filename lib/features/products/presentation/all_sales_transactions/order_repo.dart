@@ -1,4 +1,3 @@
-// providers/order_provider.dart
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:pos_ai_sales/features/products/presentation/all_sales_transactions/Order_model_transaction.dart';
 import 'package:pos_ai_sales/features/products/presentation/orders/cart_model.dart';
@@ -6,13 +5,11 @@ import 'package:pos_ai_sales/features/products/presentation/orders/cart_model.da
 class OrderNotifier extends StateNotifier<List<SalesOrder>> {
   OrderNotifier() : super([]);
 
-  // Generate unique order ID
   String _generateOrderId() {
     final now = DateTime.now();
     return 'ORD${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}';
   }
 
-  // Add new order
   String addOrder({
     required String customerName,
     required String orderType,
@@ -52,7 +49,6 @@ class OrderNotifier extends StateNotifier<List<SalesOrder>> {
     return orderId;
   }
 
-  // Get order by ID
   SalesOrder? getOrderById(String orderId) {
     try {
       return state.firstWhere((order) => order.orderId == orderId);
@@ -61,12 +57,10 @@ class OrderNotifier extends StateNotifier<List<SalesOrder>> {
     }
   }
 
-  // Get all orders
   List<SalesOrder> getAllOrders() {
     return state;
   }
 
-  // Get orders by date range
   List<SalesOrder> getOrdersByDateRange(DateTime start, DateTime end) {
     return state
         .where((order) =>
@@ -75,7 +69,6 @@ class OrderNotifier extends StateNotifier<List<SalesOrder>> {
         .toList();
   }
 
-  // Delete order
   void deleteOrder(String orderId) {
     state = state.where((order) => order.orderId != orderId).toList();
   }

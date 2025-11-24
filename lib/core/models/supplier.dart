@@ -109,7 +109,6 @@ class Supplier {
     );
   }
 
-  // sqlite map
   Map<String, dynamic> toSqliteMap() {
     return {
       "supplierId": supplierId.toString(),
@@ -118,7 +117,6 @@ class Supplier {
       "email": email,
       "phone": phone,
       "address": address,
-
       "lastModified": lastModified != null
           ? DateFormat('dd-MM-yyyy').format(lastModified!)
           : null,
@@ -142,14 +140,12 @@ class Supplier {
       email: m["email"] ?? "",
       phone: m["phone"] ?? "",
       address: m["address"] ?? "",
-
       imagePath: m["imagePath"] ?? null,
       lastModified: parsedDate,
       deleted: m["deleted"] ?? 0,
     );
   }
 
-  /// Helper: formatted date string (for UI)
   String get formattedDate {
     if (lastModified == null) return "N/A";
     return DateFormat('dd-MM-yyyy').format(lastModified!);

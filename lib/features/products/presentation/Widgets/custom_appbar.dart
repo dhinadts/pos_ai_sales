@@ -28,14 +28,10 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       backgroundColor: bgColor,
       elevation: 0,
       centerTitle: true,
-
-      // BACK BUTTON
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () => context.go('/home'),
       ),
-
-      // TITLE
       title: Text(
         title,
         style: TextStyle(
@@ -44,8 +40,6 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
           color: Colors.white,
         ),
       ),
-
-      // CART ICON WITH BADGE
       actions: [
         if (showCart)
           Stack(

@@ -77,7 +77,6 @@ class PrinterManager {
       required String paymentMethod,
       required String orderId}) async {
     try {
-      // Check if printer is available (for mobile)
       final isAvailable = await _printerService.isPrinterAvailable();
 
       if (!isAvailable && !kIsWeb) {
@@ -97,13 +96,12 @@ class PrinterManager {
           orderId: orderId);
     } catch (e) {
       debugPrint("Print error: $e");
-      rethrow; // Re-throw to handle in UI
+      rethrow;
     }
   }
 
   Future<bool> connectToFirstAvailablePrinter() async {
     if (kIsWeb) {
-      // Web doesn't need Bluetooth connection
       return true;
     } else {
       try {

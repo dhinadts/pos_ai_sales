@@ -23,7 +23,7 @@ class FirebaseSuppliersService {
       final snapshot = await _db
           .collection(collection)
           .where("supplierId", isEqualTo: id)
-          .limit(1) // Limit to 1 result for efficiency
+          .limit(1)
           .get();
 
       if (snapshot.docs.isEmpty) {
@@ -31,7 +31,7 @@ class FirebaseSuppliersService {
       }
 
       final doc = snapshot.docs.first;
-      final data = doc.data(); // as Map<String, dynamic>;
+      final data = doc.data();
 
       return Supplier.fromJson(data);
     } catch (e) {

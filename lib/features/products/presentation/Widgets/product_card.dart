@@ -45,9 +45,8 @@ class ProductCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: hasImage
-                    ? Colors.transparent
-                    : Colors.blue.shade100,
+                backgroundColor:
+                    hasImage ? Colors.transparent : Colors.blue.shade100,
                 backgroundImage: hasImage ? FileImage(File(imagePath!)) : null,
                 child: !hasImage
                     ? Text(
@@ -81,11 +80,7 @@ class ProductCard extends StatelessWidget {
               ),
               Column(
                 children: [
-/*                   IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.blue),
-                    onPressed: onEdit,
-                  ),
- */                  IconButton(
+                  IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: onDelete,
                   ),

@@ -1,12 +1,7 @@
-// lib/core/utilits/thermal_printer/universal_printer_service.dart
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:pos_ai_sales/core/utilits/thermal_printer/bluetooth_printer_service.dart';
 import 'package:pos_ai_sales/features/products/presentation/orders/cart_model.dart';
-// Import for web
 import 'dart:convert' as convert;
 import 'dart:html' as html;
-import 'dart:typed_data';
 
 abstract class PrinterService {
   Future<void> printOrder(
@@ -23,7 +18,6 @@ abstract class PrinterService {
   Future<bool> isPrinterAvailable();
 }
 
-// Mobile implementation
 class MobilePrinterService implements PrinterService {
   final BluetoothPrinterService _bluetoothService = BluetoothPrinterService();
 
@@ -65,7 +59,6 @@ class MobilePrinterService implements PrinterService {
   }
 }
 
-// Web implementation - Uses browser printing
 class WebPrinterService implements PrinterService {
   @override
   Future<void> printOrder(
@@ -87,7 +80,6 @@ class WebPrinterService implements PrinterService {
       customer: customer,
       orderType: orderType,
       paymentMethod: paymentMethod,
-      // orderId: orderId,
     );
 
     await _printHtmlContent(htmlContent);

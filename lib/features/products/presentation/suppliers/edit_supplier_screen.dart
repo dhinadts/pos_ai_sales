@@ -50,7 +50,6 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
     debugPrint('🔑 Supplier ID: "${widget.supplierId}"');
     debugPrint('🔑 Mode: "${widget.mode}"');
 
-    // Handle new customer case
     if (widget.supplierId == 'new' || widget.mode == 'add') {
       debugPrint('🆕 Creating new customer - clearing form');
       if (mounted) {
@@ -110,7 +109,6 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
   Future<void> _save() async {
     final firebase = ref.read(firebaseSuppliersServiceProvider);
 
-    // Validate required fields
     if (nameCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Supplier name is required')),
@@ -118,7 +116,6 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
       return;
     }
 
-    // Generate ID only for new customer
     final id = (widget.mode == "edit") ? widget.supplierId : Uuid().v4();
 
     final customer = Supplier(
@@ -138,7 +135,6 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
       debugPrint('   - ID: $id');
       debugPrint('   - Name: ${customer.name}');
 
-      // Use Firebase for both web and mobile
       if (widget.mode == "edit") {
         await firebase.updateSupplier(customer);
         debugPrint('✅ Supplier updated in Firebase');
@@ -147,10 +143,8 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
         debugPrint('✅ Supplier added to Firebase');
       }
 
-      // Refresh Supplier List UI
       ref.invalidate(supplierListProvider);
 
-      // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -162,7 +156,6 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
         );
       }
 
-      // Navigate back
       if (mounted) {
         context.go('/suppliers');
       }
@@ -179,48 +172,10 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
     }
   }
 
-/*   Future<void> _loadSupplier() async {
-    final c = await ref
-        .read(SupplierRepoProvider)
-        .byId(widget.supplierId.toString());
-    if (c != null) {
-      nameCtrl.text = c.name;
-      personCtrl.text = c.contactName ?? '';
-      phoneCtrl.text = c.phone ?? '';
-      emailCtrl.text = c.email ?? '';
-      addressCtrl.text = c.address ?? '';
-    }
-  }
-
-  Future<void> _save() async {
-    final repo = ref.read(SupplierRepoProvider);
-
-    final data = Supplier(
-      supplierId: widget.supplierId,
-      name: nameCtrl.text,
-      contactName: personCtrl.text,
-      phone: phoneCtrl.text,
-      email: emailCtrl.text,
-      address: addressCtrl.text,
-      imagePath: null,
-      lastModified: DateTime.now(),
-    );
-
-    if (widget.mode == "edit") {
-      await repo.update(data);
-    } else {
-      await repo.save(data);
-    }
-
-    ref.invalidate(supplierListProvider); // refresh list screen
-    context.go('/suppliers');
-  }
- */
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Navigator.of(context).pop();
         context.go('/suppliers');
         return false;
       },
@@ -233,7 +188,6 @@ class _AddSupplierScreenState extends ConsumerState<AddSupplierScreen> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () => context.go('/suppliers'),
-            // FIX: go_router pop
           ),
         ),
         body: SingleChildScrollView(

@@ -6,15 +6,13 @@ class FirebaseExpensesService {
   final _db = FirebaseFirestore.instance;
   final collection = "expenses";
 
-  /// ADD
   Future<void> addExpense(Expense expense) async {
     await _db
         .collection(collection)
-        .doc(expense.expenseId.toString()) // must be string
+        .doc(expense.expenseId.toString())
         .set(expense.toFirebaseMap());
   }
 
-  /// GET ALL (latest first)
   Future<List<Expense>> getExpenses() async {
     final snapshot = await _db
         .collection(collection)
@@ -26,7 +24,6 @@ class FirebaseExpensesService {
         .toList();
   }
 
-  /// UPDATE
   Future<void> updateExpense(Expense expense) async {
     await _db
         .collection(collection)
@@ -34,7 +31,6 @@ class FirebaseExpensesService {
         .update(expense.toFirebaseMap());
   }
 
-  /// DELETE
   Future<void> deleteExpense(String expenseId) async {
     await _db.collection(collection).doc(expenseId).delete();
   }
@@ -48,7 +44,7 @@ class FirebaseExpensesService {
       final snapshot = await _db
           .collection(collection)
           .where("expenseId", isEqualTo: id)
-          .limit(1) // Limit to 1 result for efficiency
+          .limit(1)
           .get();
 
       if (snapshot.docs.isEmpty) {
@@ -56,7 +52,7 @@ class FirebaseExpensesService {
       }
 
       final doc = snapshot.docs.first;
-      final data = doc.data(); // as Map<String, dynamic>;
+      final data = doc.data();
 
       return Expense.fromFirebaseMap(data);
     } catch (e) {

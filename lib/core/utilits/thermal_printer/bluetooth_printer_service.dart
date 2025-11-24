@@ -3,7 +3,6 @@ import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:pos_ai_sales/features/products/presentation/orders/cart_model.dart';
 
-/// Handles Bluetooth Printer communication
 class BluetoothPrinterService {
   final BlueThermalPrinter _bt = BlueThermalPrinter.instance;
 
@@ -42,7 +41,8 @@ class BluetoothPrinterService {
     required double finalTotal,
     required String customer,
     required String orderType,
-    required String paymentMethod, required String orderId,
+    required String paymentMethod,
+    required String orderId,
   }) async {
     try {
       bool isConnected = await _bt.isConnected ?? false;
@@ -86,20 +86,20 @@ class BluetoothPrinterService {
     }
   }
 }
+
 class PrinterManager {
   final BluetoothPrinterService _printerService = BluetoothPrinterService();
 
-  Future<void> printCartOrder({
-    required List<CartItem> items,
-    required double subtotal,
-    required double tax,
-    required double discount,
-    required double finalTotal,
-    required String customer,
-    required String orderType,
-    required String paymentMethod,
-    required String orderId
-  }) async {
+  Future<void> printCartOrder(
+      {required List<CartItem> items,
+      required double subtotal,
+      required double tax,
+      required double discount,
+      required double finalTotal,
+      required String customer,
+      required String orderType,
+      required String paymentMethod,
+      required String orderId}) async {
     try {
       await _printerService.printOrder(
         items: items,

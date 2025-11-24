@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_type_check
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,23 +17,6 @@ class OrderScreen extends ConsumerStatefulWidget {
 class _OrderScreenState extends ConsumerState<OrderScreen> {
   final TextEditingController searchCtrl = TextEditingController();
 
-/*   final List<Map<String, dynamic>> products = [
-    {
-      "id": "1",
-      "name": "Dano Milk",
-      "unit": "500 g",
-      "price": 250.0,
-      "stock": 10,
-    },
-    {
-      "id": "2",
-      "name": "Adata Pendrive",
-      "unit": "1 Pcs",
-      "price": 600.0,
-      "stock": 5,
-    },
-  ];
- */
   @override
   Widget build(BuildContext context) {
     final responsive = ref.watch(responsiveProvider);
@@ -102,7 +83,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
           ],
         ),
         body: LayoutBuilder(builder: (context, constraints) {
-          // Update responsive values
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ref.read(responsiveProvider.notifier).updateFromContext(context);
           });
@@ -118,7 +98,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                       ),
                       child: Column(
                         children: [
-                          // SEARCH BAR
                           Container(
                             padding: EdgeInsets.symmetric(
                                 horizontal: responsive.width(15)),
@@ -137,10 +116,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                               onChanged: (_) => setState(() {}),
                             ),
                           ),
-
                           SizedBox(height: responsive.height(20)),
-
-                          // PRODUCT GRID (responsive)
                           Expanded(
                             child: productsAsync.when(
                               loading: () =>
@@ -165,11 +141,9 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                   itemBuilder: (_, index) {
                                     final product = products[index];
 
-                                    // Ensure all values are properly converted to the right types
                                     return ProductCard(
                                       product: {
-                                        "id": product.productId
-                                            .toString(), // Ensure it's a string
+                                        "id": product.productId.toString(),
                                         "name": product.name.toString(),
                                         "unit": product.weight.toString() ?? '',
                                         "price": product.sellPrice is double

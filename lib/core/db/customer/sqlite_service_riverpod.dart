@@ -200,14 +200,14 @@ final customerListProvider =
     final firebaseService = ref.read(firebaseCustomersServiceProvider);
     final customers = await firebaseService.getCustomers();
 
-    debugPrint('✅ Loaded ${customers.length} customers from Firebase');
+    debugPrint('Loaded ${customers.length} customers from Firebase');
 
     // Sort by name
     customers.sort((a, b) => a.name.compareTo(b.name));
 
     return customers;
   } catch (e) {
-    debugPrint('❌ Error loading customers from Firebase: $e');
+    debugPrint('Error loading customers from Firebase: $e');
 
     // Show error in UI but return empty list to prevent crashes
     return [];

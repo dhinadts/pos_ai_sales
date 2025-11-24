@@ -39,13 +39,11 @@ class ProductsSqfliteService {
     );
   }
 
-  // CREATE
   Future<int> insertProduct(Map<String, dynamic> data) async {
     final database = await db;
     return await database.insert('products', data);
   }
 
-  // READ all (not deleted)
   Future<List<Map<String, dynamic>>> getProducts() async {
     final database = await db;
     return await database.query(
@@ -55,7 +53,6 @@ class ProductsSqfliteService {
     );
   }
 
-  // READ specific product
   Future<Map<String, dynamic>?> getProductById(String id) async {
     final database = await db;
     final res = await database.query(
@@ -67,7 +64,6 @@ class ProductsSqfliteService {
     return null;
   }
 
-  // UPDATE
   Future<int> updateProduct(UuidValue id, Map<String, dynamic> data) async {
     final database = await db;
     return await database.update(
@@ -78,7 +74,6 @@ class ProductsSqfliteService {
     );
   }
 
-  // SOFT DELETE → set deleted = 1
   Future<int> softDelete(String id) async {
     final database = await db;
     return await database.update(
@@ -89,7 +84,6 @@ class ProductsSqfliteService {
     );
   }
 
-  // HARD DELETE → remove row
   Future<int> hardDelete(String id) async {
     final database = await db;
     return await database.delete(

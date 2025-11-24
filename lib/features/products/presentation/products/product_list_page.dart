@@ -6,7 +6,6 @@ import 'package:pos_ai_sales/core/utilits/responsive_design.dart';
 import 'package:pos_ai_sales/features/products/presentation/Widgets/product_card.dart';
 import 'package:pos_ai_sales/features/products/presentation/products/product_change_notifier.dart';
 import 'package:uuid/uuid.dart';
-import 'package:pos_ai_sales/core/models/product.dart';
 
 class ProductListPage extends ConsumerWidget {
   const ProductListPage({super.key});
@@ -53,7 +52,6 @@ class ProductListPage extends ConsumerWidget {
                     ),
                   ),
                   onChanged: (query) {
-                    // Add search functionality
                     ref
                         .read(productsListNotifierProvider.notifier)
                         .searchProducts(query);
@@ -145,12 +143,10 @@ class ProductListPage extends ConsumerWidget {
 
     if (confirmed == true) {
       try {
-        // Remove from UI immediately
         ref
             .read(productsListNotifierProvider.notifier)
             .removeProduct(productId);
 
-        // Delete from Firebase
         final firebaseService = ref.read(firebaseProductsServiceProvider);
         await firebaseService.deleteProduct(productId);
 
@@ -158,7 +154,6 @@ class ProductListPage extends ConsumerWidget {
           const SnackBar(content: Text('Product deleted successfully')),
         );
       } catch (e) {
-        // Refresh if deletion failed
         ref.read(productsListNotifierProvider.notifier).refresh();
         ScaffoldMessenger.of(ref.context).showSnackBar(
           SnackBar(content: Text('Failed to delete product: $e')),

@@ -6,9 +6,8 @@ class FirebaseCustomersService {
   final _db = FirebaseFirestore.instance;
   final String collection = "customers";
 
-  /// Add customer
   Future<void> addCustomer(Customer customer) async {
-    final docId = customer.customerId.toString(); // ensure it is a string
+    final docId = customer.customerId.toString();
 
     await _db.collection(collection).doc(docId).set({
       ...customer.toFirebaseMap(),
@@ -22,7 +21,7 @@ class FirebaseCustomersService {
       final snapshot = await _db
           .collection(collection)
           .where("customerId", isEqualTo: id)
-          .limit(1) // Limit to 1 result for efficiency
+          .limit(1)
           .get();
 
       if (snapshot.docs.isEmpty) {
@@ -30,7 +29,7 @@ class FirebaseCustomersService {
       }
 
       final doc = snapshot.docs.first;
-      final data = doc.data(); // as Map<String, dynamic>;
+      final data = doc.data();
 
       return Customer.fromJson(data);
     } catch (e) {
@@ -39,7 +38,6 @@ class FirebaseCustomersService {
     }
   }
 
-  /// Update customer
   Future<void> updateCustomer(Customer customer) async {
     final docId = customer.customerId.toString();
 
@@ -49,7 +47,6 @@ class FirebaseCustomersService {
     });
   }
 
-  /// Soft delete support
   Future<void> deleteCustomer(String customerId) async {
     await _db.collection(collection).doc(customerId).update({
       "deleted": 1,
@@ -57,31 +54,24 @@ class FirebaseCustomersService {
     });
   }
 
-  /// Get all active customers
   Future<List<Customer>> getCustomers() async {
-    final snapshot = await _db
-        .collection(collection)
-        .where("deleted", isEqualTo: 0)
-        // .orderBy("name", descending: false)
-        .get();
+    final snapshot =
+        await _db.collection(collection).where("deleted", isEqualTo: 0).get();
 
     return snapshot.docs
         .map((doc) => Customer.fromFirebaseMap(doc.data()))
         .toList();
   }
 
-  /// Alias for loading
   Future<List<Customer>> loadAll() => getCustomers();
 }
 
-/// Service provider
 final firebaseCustomersServiceProvider = Provider<FirebaseCustomersService>((
   ref,
 ) {
   return FirebaseCustomersService();
 });
 
-/// Customer list provider
 final customerListProviderFirebase = FutureProvider<List<Customer>>((
   ref,
 ) async {

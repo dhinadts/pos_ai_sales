@@ -25,7 +25,6 @@ class SettingsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Icon(icon),
-            // Image.asset(asset, height: 60),
             const SizedBox(width: 20),
             Text(
               title,

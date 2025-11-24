@@ -3,7 +3,7 @@ class CartItem {
   final String name;
   final String unit;
   final double price;
-  final int quantity; // Make immutable for StateNotifier updates
+  final int quantity;
 
   CartItem({
     required this.id,

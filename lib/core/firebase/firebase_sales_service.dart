@@ -33,9 +33,10 @@ class FirebaseSalesTransactionsService {
 
 final firebaseSalesTransactionsProvider =
     Provider<FirebaseSalesTransactionsService>((ref) {
-      return FirebaseSalesTransactionsService();
-    });
-final firebaseSalesTransactionsProviderFirebase = FutureProvider<List<t.Transaction>>((
+  return FirebaseSalesTransactionsService();
+});
+final firebaseSalesTransactionsProviderFirebase =
+    FutureProvider<List<t.Transaction>>((
   ref,
 ) async {
   final service = ref.read(firebaseSalesTransactionsProvider);

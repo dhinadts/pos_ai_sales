@@ -67,7 +67,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final subtotal = 250.00; // Replace with actual subtotal
+    final subtotal = 250.00;
     final taxRate = 0.15;
     final taxAmount = subtotal * taxRate;
     final discountAmount = double.tryParse(selectedDiscount) ?? 0.0;
@@ -83,7 +83,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             const Center(
               child: Text(
                 "Order Summary",
@@ -95,8 +94,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Customer Dropdown
             _buildDropdownSection(
               label: "Customer",
               value: selectedCustomer,
@@ -113,8 +110,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Order Type Dropdown
             _buildDropdownSection(
               label: "Order Type",
               value: selectedOrderType,
@@ -131,8 +126,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Payment Method Dropdown
             _buildDropdownSection(
               label: "Payment Method",
               value: selectedPaymentMethod,
@@ -149,8 +142,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Discount Dropdown
             _buildDropdownSection(
               label: "Discount",
               value: "₹$selectedDiscount",
@@ -167,12 +158,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Divider
             const Divider(thickness: 1, color: Colors.grey),
             const SizedBox(height: 15),
-
-            // Price Breakdown
             _buildPriceRow("Sub Total", "₹${subtotal.toStringAsFixed(2)}"),
             const SizedBox(height: 8),
             _buildPriceRow(
@@ -181,12 +168,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
             _buildPriceRow(
                 "Discount", "-₹${discountAmount.toStringAsFixed(2)}"),
             const SizedBox(height: 15),
-
-            // Divider
             const Divider(thickness: 1, color: Colors.grey),
             const SizedBox(height: 15),
-
-            // Total Price
             Center(
               child: Text(
                 "Total Price: ₹${finalTotal.toStringAsFixed(2)}",
@@ -198,8 +181,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ),
             ),
             const SizedBox(height: 25),
-
-            // Submit Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -365,7 +346,6 @@ class _SearchableDropdownDialogState extends State<SearchableDropdownDialog> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Title
             Text(
               widget.title,
               style: const TextStyle(
@@ -374,8 +354,6 @@ class _SearchableDropdownDialogState extends State<SearchableDropdownDialog> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Search Bar
             Container(
               decoration: BoxDecoration(
                 color: Colors.grey[100],
@@ -394,8 +372,6 @@ class _SearchableDropdownDialogState extends State<SearchableDropdownDialog> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Items List
             Expanded(
               child: filteredItems.isEmpty
                   ? const Center(
@@ -422,8 +398,6 @@ class _SearchableDropdownDialogState extends State<SearchableDropdownDialog> {
                       },
                     ),
             ),
-
-            // Cancel Button
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,

@@ -1,4 +1,3 @@
-// lib/providers/printer_provider.dart
 import 'package:esc_pos_printer_plus/esc_pos_printer_plus.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:pos_ai_sales/features/products/presentation/sales_report/printer/thermal_printer_service.dart';

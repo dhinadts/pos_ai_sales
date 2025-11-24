@@ -16,7 +16,6 @@ class ProductSqliteRepository {
 
   Future<List<Product>> getProducts() async {
     final rows = await db.getProducts();
-    // debugPrint("SQLITE rows: ${rows.length}");
     return rows.map((r) => Product.fromSqliteMap(r)).toList();
   }
 
